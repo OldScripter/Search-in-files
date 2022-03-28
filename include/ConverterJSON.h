@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include <fstream>
 
 #include "nlohmann/json.hpp"
 
@@ -36,7 +37,13 @@ class ConverterJSON
      */
     void PutAnswers(std::vector<std::vector<std::pair<int, float>>> answers);
 
+    void ReadConfigFile();
+
+    std::vector<std::string>* GetFilesList();
+
     private:
+
+    const std::string CONFIG_FILE_PATH = "..//config.json"; // Change in release version
 
     std::string applicationName;
     std::string applicationVersion;
@@ -45,4 +52,5 @@ class ConverterJSON
     bool readConfigurationFile();
     std::string getApplicationName() const;
     std::string getApplicationVersion() const;
+    std::vector<std::string> textDocuments;
 };
