@@ -28,27 +28,31 @@ void ConverterJSON::PutAnswers(std::vector<std::vector<std::pair<int, float>>> a
         if (answersFile.is_open())
         {
             int requestCount = 0;
-            int relevanceCount = 0;
-            bool result = false;
             nlohmann::json answerDictionary;
             for (auto request : answers)
             {
                 //записать request+id
-                answersDict["request" + std::to_string(requestCount)]
-                result = !request.empty(); // записать результат
+                answersDict["request" + std::to_string(requestCount)]["result"] = !request.empty();
                 if (request.size() == 1)
                 {
-                    
+                    answersDict["request" + std::to_string(requestCount)]["docid"] = request[0].first;
+                    answersDict["request" + std::to_string(requestCount)]["rank"] = request[0].second;
                 }
                 else
                 {
-                    for (auto relevanse : request)
+                    auto relevance_array = nlohmann::json::array();
+                    for (auto relevance : request)
                     {
-                        //записать пару
+                        auto relevance_member = nlohmann::json::object();
+                        relevance_member["docid"] = relevance.first;
+                        relevance_member["rank"] = relevance.second;
+                        relevance_array.push_back(relevance_member);
                     }
+                    answersDict["request" + std::to_string(requestCount)]["relevance"] = relevance_array;
                 }
                 ++requestCount;
             }
+            answersFile << answersDict;
             answersFile.close();
         }
         else
@@ -60,7 +64,7 @@ void ConverterJSON::PutAnswers(std::vector<std::vector<std::pair<int, float>>> a
     }
     else
     {
-        std::cout << "No answers to push.\n"
+        std::cout << "No answers to push.\n";
     }
 }
 
