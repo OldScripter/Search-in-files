@@ -37,20 +37,39 @@ class ConverterJSON
      */
     void PutAnswers(std::vector<std::vector<std::pair<int, float>>> answers);
 
+    /**
+     * @brief Read config file specified in CONFIG_FILE_PATH
+     */
     void ReadConfigFile();
 
+    /**
+     * @brief Read request file specified in REQUEST_FILE_PATH
+     * 
+     */
+    void ReadRequestFile();
+
+    /**
+     * @brief Get the Files List specified in config.json
+     * @return std::vector<std::string>* pointer for the files list
+     */
     std::vector<std::string>* GetFilesList();
 
     private:
 
     const std::string CONFIG_FILE_PATH = "..//config.json"; // Change in release version
+    const std::string REQUEST_FILE_PATH = "..//requests.json"; // Change in release version
+    const std::string ANSWERS_FILE_PATH = "..//answers.json"; // Change in release version
 
     std::string applicationName;
     std::string applicationVersion;
     int maxResponses;
+    std::vector<std::string> textDocuments;
+    std::vector<std::string> requests;
 
     bool readConfigurationFile();
     std::string getApplicationName() const;
     std::string getApplicationVersion() const;
-    std::vector<std::string> textDocuments;
+    bool clearFileContent(std::string path);
+
+    
 };
