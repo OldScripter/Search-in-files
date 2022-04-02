@@ -2,7 +2,6 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
-
 #include "nlohmann/json.hpp"
 
 class ConverterJSON
@@ -44,7 +43,6 @@ class ConverterJSON
 
     /**
      * @brief Read request file specified in REQUEST_FILE_PATH
-     * 
      */
     void ReadRequestFile();
 
@@ -56,9 +54,9 @@ class ConverterJSON
 
     private:
 
-    const std::string CONFIG_FILE_PATH = "..//config.json"; // Change in release version
-    const std::string REQUEST_FILE_PATH = "..//requests.json"; // Change in release version
-    const std::string ANSWERS_FILE_PATH = "..//answers.json"; // Change in release version
+    const std::string CONFIG_FILE_PATH = "..//config.json";     // TODO: Change in release version
+    const std::string REQUEST_FILE_PATH = "..//requests.json";  // TODO: Change in release version
+    const std::string ANSWERS_FILE_PATH = "..//answers.json";   // TODO: Change in release version
 
     std::string applicationName;
     std::string applicationVersion;
@@ -66,10 +64,12 @@ class ConverterJSON
     std::vector<std::string> textDocuments;
     std::vector<std::string> requests;
 
-    bool readConfigurationFile();
-    std::string getApplicationName() const;
-    std::string getApplicationVersion() const;
-    bool clearFileContent(std::string path);
-
-    
+    /**
+     * @brief Clear the file
+     * 
+     * @param path [in] - as file path
+     * @return true - if clearing is successful
+     * @return false if celaring is fail
+     */
+    bool clearFileContent(const std::string path);
 };

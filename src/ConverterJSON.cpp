@@ -31,7 +31,6 @@ void ConverterJSON::PutAnswers(std::vector<std::vector<std::pair<int, float>>> a
             nlohmann::json answerDictionary;
             for (auto request : answers)
             {
-                //записать request+id
                 answersDict["request" + std::to_string(requestCount)]["result"] = !request.empty();
                 if (request.size() == 1)
                 {
@@ -60,7 +59,6 @@ void ConverterJSON::PutAnswers(std::vector<std::vector<std::pair<int, float>>> a
             std::cerr << "\t - file not found error: " + ANSWERS_FILE_PATH << "\n";
         }
         std::cout << "- - - - - - - - -\n";
-        //answersDict.push_back([])
     }
     else
     {
@@ -90,7 +88,7 @@ void ConverterJSON::ReadConfigFile()
             textDocuments.push_back(f);
         }
 
-        //TODO: just for test
+        //TODO: just for test (delete in release version)
         for (auto file : textDocuments)
         {
             std::cout << file << "\n";
@@ -122,7 +120,7 @@ void ConverterJSON::ReadRequestFile()
             requests.push_back(f);
         }
 
-        //TODO: just for test
+        //TODO: just for test (delete in release version)
         for (auto s : requests)
         {
             std::cout << s << "\n";
@@ -137,7 +135,7 @@ void ConverterJSON::ReadRequestFile()
     std::cout << "- - - - - - - - -\n";
 }
 
-bool ConverterJSON::clearFileContent(std::string path)
+bool ConverterJSON::clearFileContent(const std::string path)
 {
     std::ofstream clearingStream(path, std::ios::trunc);
     if (clearingStream.is_open())
