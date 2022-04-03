@@ -1,13 +1,19 @@
 #include <iostream>
 #include "include/ConverterJSON.h"
+#include "gtest/gtest.h"
+
+TEST(sample_test_case, sample_test)
+{
+    EXPECT_EQ(1, 1);
+}
 
 int main(int argc, char* argv[])
 {
     std::cout << "Test\n";
     ConverterJSON converterJSON;
-    converterJSON.ReadConfigFile();
-    converterJSON.ReadRequestFile();
-    std::vector<std::string>* f = converterJSON.GetFilesList();
+    converterJSON.readConfigFile();
+    converterJSON.readRequestFile();
+    std::vector<std::string>* f = converterJSON.getFilesList();
 
     std::vector<std::vector<std::pair<int, float>>> answers;
     std::vector<std::pair<int, float>> relevance1;
@@ -27,7 +33,7 @@ int main(int argc, char* argv[])
     answers.push_back(relevance2);
     answers.push_back(relevance3);
 
-    converterJSON.PutAnswers(answers);
+    converterJSON.putAnswers(answers);
 
     return 0;
 }

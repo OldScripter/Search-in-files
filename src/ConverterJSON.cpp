@@ -1,21 +1,21 @@
 #include "../include/ConverterJSON.h"
 
-std::vector<std::string> ConverterJSON::GetTextDocuments()
+std::vector<std::string> ConverterJSON::getTextDocuments()
 {
     return textDocuments;
 }
 
-int ConverterJSON::GetResponsesLimit() const
+int ConverterJSON::getResponsesLimit() const
 {
     return maxResponses;
 }
 
-std::vector<std::string> ConverterJSON::GetRequests()
+std::vector<std::string> ConverterJSON::getRequests()
 {
     return requests;
 }
 
-void ConverterJSON::PutAnswers(std::vector<std::vector<std::pair<int, float>>> answers)
+void ConverterJSON::putAnswers(std::vector<std::vector<std::pair<int, float>>> answers)
 {
     nlohmann::json answersDict;
     if (!answers.empty())
@@ -66,12 +66,12 @@ void ConverterJSON::PutAnswers(std::vector<std::vector<std::pair<int, float>>> a
     }
 }
 
-std::vector<std::string>* ConverterJSON::GetFilesList()
+std::vector<std::string>* ConverterJSON::getFilesList()
 {
     return &textDocuments;
 }
 
-void ConverterJSON::ReadConfigFile()
+void ConverterJSON::readConfigFile()
 {
     std::cout << "Configuration reading...\n";
     std::ifstream configFile(CONFIG_FILE_PATH);
@@ -106,7 +106,7 @@ void ConverterJSON::ReadConfigFile()
     std::cout << "- - - - - - - - -\n";
 }
 
-void ConverterJSON::ReadRequestFile()
+void ConverterJSON::readRequestFile()
 {
     std::cout << "Requests reading...\n";
     std::ifstream configFile(REQUEST_FILE_PATH);
