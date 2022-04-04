@@ -10,7 +10,7 @@ include(CTest)
 enable_testing()
 
 add_subdirectory(nlohmann_json)
-add_executable(search-in-files main.cpp)
+add_executable(search-in-files main.cpp src/ConverterJSON.cpp)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
