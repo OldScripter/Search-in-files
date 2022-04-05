@@ -1,19 +1,11 @@
-cmake_minimum_required(VERSION 3.0.0)
-project(search-in-files VERSION 0.1.0)
-
-set(CMAKE_CXX_STANDARD 14)
+cmake_minimum_required(VERSION 3.22)
+project(SearchEngine)
 
 set(JSON_BuildTests OFF CACHE INTERNAL "")
 
-
-include(CTest)
-enable_testing()
-
 add_subdirectory(nlohmann_json)
-add_executable(search-in-files main.cpp src/ConverterJSON.cpp)
+set(CMAKE_CXX_STANDARD 14)
 
-set(CPACK_PROJECT_NAME ${PROJECT_NAME})
-set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
-include(CPack)
+add_executable(SearchEngine main.cpp src/ConverterJSON.cpp)
 
-target_link_libraries(search-in-files PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(SearchEngine PRIVATE nlohmann_json::nlohmann_json)
