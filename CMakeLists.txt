@@ -15,7 +15,11 @@ include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 enable_testing()
 
 add_subdirectory(nlohmann_json)
-add_executable(search-in-files main.cpp src/ConverterJSON.cpp)
+add_executable(search-in-files 
+main.cpp 
+src/ConverterJSON.cpp
+src/InvertedIndex.cpp
+)
 
 #[[set(gtest_disable_pthreads on) use for MinGW ]]
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)

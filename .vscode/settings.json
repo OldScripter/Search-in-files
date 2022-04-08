@@ -65,7 +65,8 @@
         "concepts": "cpp",
         "ranges": "cpp",
         "span": "cpp",
-        "stop_token": "cpp"
+        "stop_token": "cpp",
+        "any": "cpp"
     },
     "terminal.integrated.fontSize": 18,
     "terminal.integrated.letterSpacing": 1,

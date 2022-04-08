@@ -1,6 +1,8 @@
 #include <iostream>
 #include "include/ConverterJSON.h"
+#include "include/InvertedIndex.h"
 #include "gtest/gtest.h"
+
 
 TEST(sample_test_case, sample_test)
 {
@@ -13,9 +15,13 @@ int main(int argc, char* argv[])
     ConverterJSON converterJSON;
     converterJSON.readConfigFile();
     converterJSON.readRequestFile();
-    std::vector<std::string>* f = converterJSON.getFilesList();
+    std::vector<std::string>* documents = converterJSON.getFilesList();
+    InvertedIndex invertedIndex;
+    invertedIndex.updateDocumentBase(*documents);
+    
 
-    std::vector<std::vector<std::pair<int, float>>> answers;
+
+    /* std::vector<std::vector<std::pair<int, float>>> answers;
     std::vector<std::pair<int, float>> relevance1;
     std::pair<int, float> p11 = {1, 1.1f};
     std::pair<int, float> p12 = {2, 1.2f};
@@ -33,7 +39,7 @@ int main(int argc, char* argv[])
     answers.push_back(relevance2);
     answers.push_back(relevance3);
 
-    converterJSON.putAnswers(answers);
+    converterJSON.putAnswers(answers); */
 
     return 0;
 }

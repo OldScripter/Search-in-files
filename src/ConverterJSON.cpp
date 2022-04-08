@@ -2,7 +2,7 @@
 
 std::vector<std::string> ConverterJSON::getTextDocuments()
 {
-    return textDocuments;
+    return textDocuments; 
 }
 
 int ConverterJSON::getResponsesLimit() const
@@ -85,7 +85,9 @@ void ConverterJSON::readConfigFile()
         textDocuments.clear();
         for (auto f : configDictionary["files"])
         {
-            textDocuments.push_back(f);
+            textDocuments.push_back(f); //TODO: wrong realization - need to put in the CONTENT, not file names. 
+            // я бы предложил перенести этот функционал в класс InvertedIndex, а здесь оставить только вывод списка файлов
+            // из конфигурационного файла. 
         }
 
         //TODO: just for test (delete in release version)
