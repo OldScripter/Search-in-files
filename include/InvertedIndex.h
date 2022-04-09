@@ -6,7 +6,6 @@
 #include <mutex>
 #include <fstream>
 #include <string>
-#include <sstream>
 
 struct Entry 
 {
@@ -22,7 +21,15 @@ struct Entry
 class InvertedIndex 
 {
     public:
-    InvertedIndex() = default;
+    //static ----------------------------------------------------------
+
+    /**
+     * @brief Get the Instance object of InvertedIndex class
+     * 
+     * @return InvertedIndex* 
+     */
+    static InvertedIndex* getInstance();
+    //-----------------------------------------------------------------
 
     /**
     * Update or fill the documents base in which search will be performed
@@ -37,23 +44,34 @@ class InvertedIndex
     */
     std::vector<Entry> getWordCount(const std::string& word);
 
-    private:
-    std::vector<std::string> docs; // list of documents content
-    std::map<int, std::string> document_list; // map of documents (unique id and file name) for search in 
-    std::map<std::string, std::vector<Entry>> freq_dictionary; // frequency dictionary for all files
-    std::vector<std::thread> threads; // vector for thread storing
-    std::mutex mutexIndexMap; // access to index map
-    size_t docs_count; // to be used for detection if indexing is finished
-    bool indexing_is_ongoing = false;
-
-    void indexTheFile(std::string fileContent, size_t docId);
-
     /**
      * @brief Start indexing of all files in separate threads
      */
     void indexAllDocs();
 
-    // Just for test:
+    private:
+    
+    InvertedIndex() = default; //private constructor for singleton realization
+    
+    //static ---------------------------------------------------
+
+    /**
+     * @brief Perform the indexing of the separate file
+     * 
+     * @param fileContent std::string with file content
+     * @param docId int id of the file
+     */
+    static void indexTheFile(std::string fileContent, size_t docId);
+
+    static InvertedIndex* instance;
+    static std::map<int, std::string> document_list; // map of documents (unique id and file name) for search in
+    static std::mutex mutexIndexMap; // access to index map
+    static std::vector<std::string> docs; // list of documents content
+    static std::map<std::string, std::vector<Entry>> freq_dictionary; // frequency dictionary for all files
+    static bool indexing_is_ongoing;   
+    //------------------------------------------------------------------
+
+    // Just for test
     void printTheFreqMap()
     {
         if (freq_dictionary.empty()) std::cerr << "Empty map!\n";

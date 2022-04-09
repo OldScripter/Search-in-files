@@ -1,5 +1,17 @@
 #include "../include/ConverterJSON.h"
 
+//static members initialization -------------------------
+ConverterJSON* ConverterJSON::instance = nullptr;
+ConverterJSON* ConverterJSON::getInstance()
+{
+    if (instance == nullptr)
+    {
+        instance = new ConverterJSON();
+    }
+    return instance;
+}
+//---------------------------------------------------------
+
 std::vector<std::string> ConverterJSON::getTextDocuments()
 {
     return textDocuments; 

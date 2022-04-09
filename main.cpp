@@ -1,6 +1,9 @@
 #include <iostream>
 #include "include/ConverterJSON.h"
 #include "include/InvertedIndex.h"
+#include "include/ThreadRuner.h"
+#include "include/SearchServer.h"
+
 #include "gtest/gtest.h"
 
 
@@ -12,13 +15,23 @@ TEST(sample_test_case, sample_test)
 int main(int argc, char* argv[])
 {
     std::cout << "Test\n";
-    ConverterJSON converterJSON;
-    converterJSON.readConfigFile();
-    converterJSON.readRequestFile();
-    std::vector<std::string>* documents = converterJSON.getFilesList();
-    InvertedIndex invertedIndex;
-    invertedIndex.updateDocumentBase(*documents);
+    ConverterJSON::getInstance()->readConfigFile();
+    ConverterJSON::getInstance()->readRequestFile();
+    std::vector<std::string>* documents = ConverterJSON::getInstance()->getFilesList();
+    InvertedIndex::getInstance()->updateDocumentBase(*documents);
     
+    //Test:
+    std::string testWord = "milk";
+    std::cout << "Test with word \"" << testWord << "\"\n";
+    auto result = InvertedIndex::getInstance()->getWordCount(testWord);
+    for (auto v : result)
+    {
+        std::cout << v.doc_id << " : " << v.count << "\n";
+    }
+
+    //threads test
+    //ThreadRunner t;
+    //t.runThreads(5);
 
 
     /* std::vector<std::vector<std::pair<int, float>>> answers;

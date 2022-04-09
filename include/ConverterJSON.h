@@ -7,11 +7,10 @@
 class ConverterJSON
 {
     public:
-    /**
-     * @brief Construct a new Converter JSON object
-     */
-    ConverterJSON() = default;
+    //static -----------------------------------------------------
 
+    static ConverterJSON* getInstance();
+    //------------------------------------------------------------
     /**
      * @brief Get the files content in string vector form
      * @return std::vector<std::string> content of files listed in config.json
@@ -53,6 +52,11 @@ class ConverterJSON
     std::vector<std::string>* getFilesList();
 
     private:
+    ConverterJSON() = default; // private constructor for singleton realization
+    //static ---------------------------------------------------------
+    
+    static ConverterJSON* instance;
+    //----------------------------------------------------------------
 
     const std::string CONFIG_FILE_PATH = "..//config.json";     // TODO: Change in release version
     const std::string REQUEST_FILE_PATH = "..//requests.json";  // TODO: Change in release version

@@ -1,5 +1,24 @@
 #include "../include/InvertedIndex.h"
 
+//static members initialization -----------------------------
+
+InvertedIndex* InvertedIndex::instance = nullptr;
+std::map<int, std::string> InvertedIndex::document_list = {};
+std::mutex InvertedIndex::mutexIndexMap;
+std::vector<std::string> InvertedIndex::docs = {};
+std::map<std::string, std::vector<Entry>> InvertedIndex::freq_dictionary = {};
+bool InvertedIndex::indexing_is_ongoing = false;   
+//-------------------------------------------------------------
+
+InvertedIndex* InvertedIndex::getInstance()
+{
+    if (instance == nullptr)
+    {
+        instance = new InvertedIndex();
+    }
+    return instance;
+}
+
 void InvertedIndex::updateDocumentBase(std::vector<std::string> input_docs)
 {
     // Update or fill docs vector.
@@ -32,13 +51,21 @@ void InvertedIndex::updateDocumentBase(std::vector<std::string> input_docs)
 
 std::vector<Entry> InvertedIndex::getWordCount(const std::string& word)
 {
-    // TODO: заглушка, нужна реализация
-    // Get the word count in all documents and return the list [output of the class, main method]
-    Entry e;
-    e.doc_id = 0;
-    e.count = 0;
-    std::vector<Entry> result {e};
-    return result;
+    if (indexing_is_ongoing)
+    {
+        std::cout << "Index is ongoing, please repeat the request later.\n";
+        return {};
+    }
+    auto it = freq_dictionary.find(word);
+    if (it != freq_dictionary.end())
+    {
+        return it->second;
+    }
+    else
+    {
+        std::cout << "Word \"" << word << "\" not found.\n";
+        return {};
+    }
 }
 
 void InvertedIndex::indexTheFile(std::string fileContent, size_t docId)
@@ -49,7 +76,6 @@ void InvertedIndex::indexTheFile(std::string fileContent, size_t docId)
     Entry entry;
     entry.doc_id = docId;
     entry.count = 1;
-    std::stringstream contentStream;
     for (auto symbol : fileContent)
     {
         if (symbol == ' ' && fileContent.length())
@@ -82,14 +108,11 @@ void InvertedIndex::indexTheFile(std::string fileContent, size_t docId)
             freq_dictionary.find(word_frequency.first)->second.push_back(word_it.second);
         }
     }
-    --docs_count;
-    if (docs_count <= 0) indexing_is_ongoing = false; // get if it was the last thread in indexing
     std::cout << "Thread " << std::this_thread::get_id() << " is finished.\n";
     std::cout << "Thread " << std::this_thread::get_id() << " map access is unlocked.\n";
     mutexIndexMap.unlock();
 
 }
-
 
 void InvertedIndex::indexAllDocs()
 {
@@ -100,22 +123,17 @@ void InvertedIndex::indexAllDocs()
     }
     
     indexing_is_ongoing = true;
-    docs_count = docs.size();
 
     freq_dictionary.clear();
     size_t doc_id = 0;
     for (auto content : docs)
     {
         // Start indexing thread.
-        std::thread index(indexTheFile, content, doc_id); //TODO: нужно сдулать статической
-        threads.push_back(std::move(index));
-        //indexTheFile(content, doc_id);
+        std::thread index(indexTheFile, content, doc_id);
         ++doc_id;
+        std::cout << index.get_id() << " is joining\n";
+        index.join();
     }
-    for (auto& t : threads)
-    {
-        if (t.joinable()) t.join();
-    }
+    indexing_is_ongoing = false;
     printTheFreqMap();
 }
-
