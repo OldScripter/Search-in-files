@@ -20,7 +20,8 @@ int main(int argc, char* argv[])
     std::vector<std::string>* documents = ConverterJSON::getInstance()->getFilesList();
     InvertedIndex::getInstance()->updateDocumentBase(*documents);
     
-    //Test:
+    //Test 1:
+    std::cout << " ================= Test 1 ====================\n";
     std::string testWord = "milk";
     std::cout << "Test with word \"" << testWord << "\"\n";
     auto result = InvertedIndex::getInstance()->getWordCount(testWord);
@@ -29,6 +30,12 @@ int main(int argc, char* argv[])
         std::cout << v.doc_id << " : " << v.count << "\n";
     }
 
+
+    //Test 2
+    std::cout << " ================= Test 2 ====================\n";
+    SearchServer searchServer(*InvertedIndex::getInstance());
+    searchServer.search(ConverterJSON::getInstance()->getRequests());
+    
     //threads test
     //ThreadRunner t;
     //t.runThreads(5);

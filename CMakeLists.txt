@@ -19,6 +19,7 @@ add_executable(search-in-files
 main.cpp 
 src/ConverterJSON.cpp
 src/InvertedIndex.cpp
+src/SearchServer.cpp
 )
 
 #[[set(gtest_disable_pthreads on) use for MinGW ]]

@@ -2,6 +2,8 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <set>
+#include <algorithm>
 
 #include "InvertedIndex.h"
 
@@ -17,7 +19,7 @@ struct RelativeIndex
 class SearchServer 
 {
     public:
-
+    
     /**
     * @param idx link to the InvertedIndex instance to
     * let SearchServer know the word frequency in files.
@@ -29,6 +31,8 @@ class SearchServer
     * @return the sorted list of relevant answers
     */
     std::vector<std::vector<RelativeIndex>> search(const std::vector<std::string>& queries_input);
+
+    
 
     private:
     InvertedIndex _index;
