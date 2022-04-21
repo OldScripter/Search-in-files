@@ -1,0 +1,79 @@
+#pragma once
+#include <iostream>
+#include <vector>
+#include <fstream>
+#include "nlohmann/json.hpp"
+
+class ConverterJSON
+{
+    public:
+    //static -----------------------------------------------------
+
+    static ConverterJSON* getInstance();
+    //------------------------------------------------------------
+    /**
+     * @brief Get the files content in string vector form
+     * @return std::vector<std::string> content of files listed in config.json
+     */
+    std::vector<std::string> getTextDocuments();
+
+    /**
+     * @brief Get the max responses per request 
+     * @return int max responses count
+     */
+    int getResponsesLimit() const; // @StasTalanov: const is added (proposal) - not according to requirements.
+
+    /**
+     * @brief Get the Requests from requests.json
+     * @return std::vector<std::string> requests list
+     */
+    std::vector<std::string> getRequests();
+
+    /**
+     * @brief Put requests results into answers.json file
+     * @param[in] answers list of answers to be placed into answers.json file
+     */
+    void putAnswers(std::vector<std::vector<std::pair<int, float>>> answers);
+
+    /**
+     * @brief Read config file specified in CONFIG_FILE_PATH
+     */
+    void readConfigFile();
+
+    /**
+     * @brief Read request file specified in REQUEST_FILE_PATH
+     */
+    void readRequestFile();
+
+    /**
+     * @brief Get the Files List specified in config.json
+     * @return std::vector<std::string>* pointer for the files list
+     */
+    std::vector<std::string>* getFilesList();
+
+    private:
+    ConverterJSON() = default; // private constructor for singleton realization
+    //static ---------------------------------------------------------
+    
+    static ConverterJSON* instance;
+    //----------------------------------------------------------------
+
+    const std::string CONFIG_FILE_PATH = "..//config.json";     // TODO: Change in release version
+    const std::string REQUEST_FILE_PATH = "..//requests.json";  // TODO: Change in release version
+    const std::string ANSWERS_FILE_PATH = "..//answers.json";   // TODO: Change in release version
+
+    std::string applicationName;
+    std::string applicationVersion;
+    int maxResponses;
+    std::vector<std::string> textDocuments;
+    std::vector<std::string> requests;
+
+    /**
+     * @brief Clear the file
+     * 
+     * @param path [in] - as file path
+     * @return true - if clearing is successful
+     * @return false if celaring is fail
+     */
+    bool clearFileContent(const std::string path);
+};
