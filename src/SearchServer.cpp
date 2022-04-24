@@ -1,37 +1,5 @@
 #include "../include/SearchServer.h"
 
-void SearchServer::printSet(std::set<std::string>& container)
-{
-    std::cout << "\t- Debug: ";
-    if (container.empty())
-    {
-        std::cout << "Set is empty\n";
-        return;
-    }
-    std::cout << "Set: ";
-    for (auto const &value: container)
-    {
-        std::cout << value << " ";
-    }
-    std::cout << "\n";
-}
-
-void SearchServer::printVector(std::vector<std::pair<std::string, size_t>>& container)
-{
-    std::cout << "\t- Debug: ";
-    if (container.empty())
-    {
-        std::cout << "Vector is empty\n";
-        return;
-    }
-    std::cout << "Vector: ";
-    for (auto const &value: container)
-    {
-        std::cout << value.first << "-" << value.second << " ";
-    }
-    std::cout << "\n";
-}
-
 std::set<std::string> SearchServer::getUniqueWords(const std::string& request)
 {
     std::set<std::string> result;
@@ -71,27 +39,31 @@ std::vector<std::pair<std::string, size_t>> SearchServer::getWordsEntries(const 
     return result;
 }
 
-std::vector<size_t> SearchServer::getDocumentsWithAllWords(const std::vector<std::pair<std::string, size_t>> &words) {
-    std::vector<size_t> result;
-    for (auto wordAndEntry : words)
+std::vector<size_t> SearchServer::getDocumentsWithAllWords(const std::vector<std::pair<std::string, size_t>> &words)
+{
+    std::vector<size_t> docIds {};
+    // Getting entries and docIds:
+    for (const auto& wordAndEntry : words)
     {
         auto entries = InvertedIndex::getInstance()->getWordCount(wordAndEntry.first);
-        //TODO: check the entries list.
         for (auto entry : entries)
         {
-            result.push_back(entry.doc_id);
+            docIds.push_back(entry.doc_id);
         }
     }
 
-    //Clearing doc ids where at least 1 word is missing:
-    result.erase(std::remove_if(result.begin(), result.end(), [&result, &words](const size_t &x)
+    // Clearing doc ids where at least 1 word is missing:
+    docIds.erase(std::remove_if(docIds.begin(), docIds.end(), [&docIds, &words](const size_t &x)
     {
-        return std::count(result.begin(), result.end(), x) != words.size();
-    }), result.end());
+        return std::count(docIds.begin(), docIds.end(), x) != words.size();
+    }), docIds.end());
 
-    return result;
+    // Getting unique ids from docIds:
+   std::set<size_t> uniqueDocIds (docIds.begin(), docIds.end());
+   docIds.clear();
+   docIds.assign(uniqueDocIds.begin(), uniqueDocIds.end());
+   return docIds;
 }
-
 
 void SearchServer::sortWordsAscendingToEntries(std::vector<std::pair<std::string, size_t>>& wordsEntries)
 {
@@ -101,219 +73,175 @@ void SearchServer::sortWordsAscendingToEntries(std::vector<std::pair<std::string
     });
 }
 
-void SearchServer::printDocumentIds(std::vector<size_t>& documentIds)
-{
-    std::cout << "Doc ids:\n";
-    for (auto docId : documentIds)
-    {
-        std::cout << docId << " ";
-    }
-    std::cout << "\n";
+size_t SearchServer::getAbsoluteRelevanceForDocument(size_t docId, std::set<std::string> &uniqueWords) {
+   size_t absoluteRelevance {0};
+   for (const auto& word : uniqueWords)
+   {
+       absoluteRelevance += InvertedIndex::getInstance()->getWordCountInDoc(word, docId);
+   }
+    return absoluteRelevance;
 }
 
-
-std::vector<RelativeIndex> SearchServer::search(const std::vector<std::string>& queries_input)
+std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<std::string>& queries_input)
 {
+    std::vector<std::vector<RelativeIndex>> result{};
+    if (queries_input.empty())
+    {
+        std::cerr << "Requests are empty.\n";
+        return result;
+    }
+
     for (const auto& query : queries_input)
     {
-        std::cout << "\t- Debug: The request is: " << query << " ";
-        std::cout << "\n";
-
         // Get unique words from query
         std::set<std::string> uniqueWords = getUniqueWords(query);
-        printSet(uniqueWords);
+        // TODO: Check unique words:
+        {
+            std::cout << "1. TEST - unique words:\n";
+            for (auto word : uniqueWords) {
+                std::cout << word << "\t";
+            }
+            std::cout << "\nEND OF TEST - - - - -\n";
+            //---------------------------------------
+        }
+
 
         // Get the entry count for each word
         auto wordsEntries = getWordsEntries(uniqueWords);
-        printVector(wordsEntries);
+        // TODO: Check words entries:
+        {
+            std::cout << "2. TEST - wordsEntries:\n";
+            for (auto entry : wordsEntries) {
+                std::cout << "word: ";
+                std::cout << entry.first << "\t";
+                std::cout << "entries: ";
+                std::cout << entry.second << "\n";
+            }
+            std::cout << "END OF TEST - - - - -\n";
+            //---------------------------------------
+        }
 
         // Sort unique words according to entry count in ascending direction
         sortWordsAscendingToEntries(wordsEntries);
-        printVector(wordsEntries);
+        if (wordsEntries.back().second == 0)
+        {
+            std::cerr << "No matches are found.\n";
+            return result;
+        }
+        // TODO: Check words entries:
+        {
+            std::cout << "3. TEST - wordsEntries after sort:\n";
+            for (auto entry : wordsEntries) {
+                std::cout << "word: ";
+                std::cout << entry.first << "\t";
+                std::cout << "entries: ";
+                std::cout << entry.second << "\t";
+            }
+            std::cout << "\nEND OF TEST - - - - -\n";
+            //---------------------------------------
+        }
 
         // Get the document list of documents for each word
-        // Get documents with all words in list as a vector
+        // and get documents with all words in list as a vector:
         auto documentIds = getDocumentsWithAllWords(wordsEntries);
-        printDocumentIds(documentIds);
+        // TODO: Check doc ids:
+        {
+            std::cout << "4. TEST - doc ids:\n";
+            for (auto docId : documentIds) {
+                std::cout << docId << "\t";
+            }
+            std::cout << "\nEND OF TEST - - - - -\n";
+            //---------------------------------------
+        }
 
-        // for each document
-        // {
-            // Get document absolute relevance
-        // }
-        // for each document
-        // {
-            // Get document relative relevance
-        // }
+        // Get absolute relevance and maximal relevance:
+        std::vector<RelativeIndex> relativeIndexes;
+        size_t maxRelevance {0};
+        for (const auto& docId : documentIds)
+        {
+            size_t absoluteRelevance = getAbsoluteRelevanceForDocument(docId, uniqueWords);
+            auto* relativeIndex = new RelativeIndex(docId, absoluteRelevance);
+
+            relativeIndexes.push_back(*relativeIndex);
+            if (absoluteRelevance > maxRelevance) maxRelevance = absoluteRelevance;
+        }
+        // TODO: MaxAbsRelevance:
+        {
+            std::cout << "5. TEST - max abs relevance:\n";
+            std::cout << maxRelevance;
+            std::cout << "\nEND OF TEST - - - - -\n";
+            //---------------------------------------
+
+            // TODO: Absolute indexes before sort:
+            std::cout << "6. TEST - absolute relevances before sorting:\n";
+            for (auto ind : relativeIndexes) {
+                std::cout << "dicId: ";
+                std::cout << ind.doc_id << "\t";
+                std::cout << "abs_ind: ";
+                std::cout << ind.absoluteIndex << "\t";
+            }
+            std::cout << "\nEND OF TEST - - - - -\n";
+            //---------------------------------------
+        }
+
+        // Get relative relevance for each document:
+        for (auto& relativeIndex : relativeIndexes)
+        {
+            relativeIndex.rank = (float) (relativeIndex.absoluteIndex) / (float) maxRelevance;
+        }
+                // TODO: Relative indexes before sort:
+        {
+            std::cout << "7. TEST - relative relevances before sorting:\n";
+            for (auto ind : relativeIndexes) {
+                std::cout << "dicId: ";
+                std::cout << ind.doc_id << "\t";
+                std::cout << "abs_ind: ";
+                std::cout << ind.rank << "\t";
+            }
+            std::cout << "\nEND OF TEST - - - - -\n";
+            //---------------------------------------
+        }
+
         // Sort the documents according to relevance descending
-        // Push this vector to the result
+        std::sort(relativeIndexes.begin(), relativeIndexes.end(), [&relativeIndexes](RelativeIndex &left, RelativeIndex &right)
+        {
+           return left.rank > right.rank;
+        });
+
+        // TODO: Relative indexes before sort:
+        std::cout << "8. TEST - relative relevances after sorting:\n";
+        for (auto ind : relativeIndexes)
+        {
+            std::cout << "dicId: ";
+            std::cout << ind.doc_id << "\t";
+            std::cout << "abs_ind: ";
+            std::cout << ind.rank << "\t";
+        }
+        std::cout << "\nEND OF TEST - - - - -\n";
+        //---------------------------------------
+
+        // Push this vector to the result:
+        result.push_back(relativeIndexes);
     }
+
+    // TODO: check of search function result - delete in release -----------
+    std::cout << "+ + + Returned from server.search:\n";
+    for (auto answer : result)
+    {
+        for (auto subanswer : answer)
+        {
+            std::cout << "doc_id: ";
+            std::cout << subanswer.doc_id << ";\t";
+            std::cout << "abs_ind: ";
+            std::cout << subanswer.absoluteIndex << ";\t";
+            std::cout << "rel_ind: ";
+            std::cout << subanswer.rank << "\n";
+        }
+        std::cout << "- - - - -\n";
+    }
+    std::cout << "\n";
+    //---------------------------------------------------------------------
+
     // return the answer
-    std::vector<RelativeIndex> res = {};
-    return res;
+    return result;
 }
-
-
-
-
-
-
-
-
-/*
-
-std::vector<RelativeIndex> SearchServer::search(const std::vector<std::string>& queries_input)
-{
-
-    std::map<std::string, int> wordsEntryMap;
-    // Get the uniques words from input
-    for (auto word : queries_input)
-    {
-        std::pair<std::string, RelativeIndex> result;
-        auto entries = _index.getWordCount(word);
-        auto entriesCount = 0;
-        for (auto entry : entries)
-        {
-            entriesCount += entry.count;
-        }
-        std::pair<std::string, int> wordToEmplace (word, entriesCount);
-        auto emplace_result = wordsEntryMap.emplace(wordToEmplace);
-    }
-
-    // Upload unique values to vector:
-
-    std::vector<std::pair<std::string, int>> wordsEntryVector;
-    for (auto wordsEntryPair : wordsEntryMap)
-    {
-        wordsEntryVector.push_back(wordsEntryPair);
-    }
-
-    // Print words & etries vector:
-
-    for (auto wordsEntryPair : wordsEntryVector)
-    {
-        std::cout << wordsEntryPair.first << " : " << wordsEntryPair.second << "\n";
-    }
-    
-    // Sort the vector according to entriesCount:
-
-    std::sort(wordsEntryVector.begin(), wordsEntryVector.end(), [](auto &left, auto &right) 
-    {
-        return left.second < right.second;
-    });
-
-    // Print words & etries vector after sorting:
-
-    for (auto wordsEntryPair : wordsEntryVector)
-    {
-        std::cout << wordsEntryPair.first << " : " << wordsEntryPair.second << "\n";
-    }
-
-    // Find all docs in which each word appears:
-    std::vector <size_t> doc_ids;
-
-    // Получаем перечень файлов в которых встречается самое редкое слово и добавляем в вектор doc_ids.
-    auto entries = _index.getWordCount(wordsEntryVector[0].first);
-    // Добавляем все doc_id в doc_ids:
-    for (auto entry : entries)
-    {
-        doc_ids.push_back(entry.doc_id);
-    }
-    // Тест - печатаем doc_ids до чистки
-    for (auto doc_id : doc_ids)
-    {
-        std::cout << doc_id << " ";
-    }
-
-    // Проверяем в каких файлах встречаются другие слова (нужен рефакторинг - можно проще).
-    for (int i = 1; i < wordsEntryVector.size(); ++i)
-    {
-        auto other_entries = _index.getWordCount(wordsEntryVector[i].first);
-        //Проходимся по doc_ids: если в other_entries не содержаться все doc_id из doc_ids - удаляем лишние из doc_ids.
-        for (auto doc_id : doc_ids)
-        {
-            bool isFound = false;
-            for (auto entry : other_entries)
-            {
-                if (entry.doc_id == doc_id)
-                {
-                    isFound = true;
-                    break;
-                }
-            }
-            if (!isFound)
-            {
-                auto after_removal (std::remove(begin(doc_ids), end(doc_ids), doc_id));
-                doc_ids.erase(after_removal, end(doc_ids));
-                doc_ids.shrink_to_fit();
-            }
-        }
-    }
-
-    // Печатаем doc_ids - для теста:
-    std::cout << "\n";
-    for (auto doc_id : doc_ids)
-    {
-        std::cout << doc_id << " ";
-    }
-    std::cout << "\n";
-
-    // Calculating absolute indexes and max absolute index:
-    std::vector<size_t> absoluteIndexes;
-    size_t maxAbsoluteIndex = 0;
-    for (auto doc_id : doc_ids)
-    {
-        size_t absoluteIndex = 0;
-        for (const auto& wordsEntry : wordsEntryVector)
-        {
-            auto word = wordsEntry.first;
-            absoluteIndex += _index.getWordCountInDoc(word, doc_id);
-            maxAbsoluteIndex = absoluteIndex > maxAbsoluteIndex ? absoluteIndex : maxAbsoluteIndex;
-        }
-        absoluteIndexes.push_back(absoluteIndex);
-    }
-
-    // Print absolute indexes:
-    std::cout << "Unsorted answer:\n";
-    for (auto value : absoluteIndexes)
-    {
-        std::cout << "abindex " << value << " : maxindex " << maxAbsoluteIndex << "\n";
-    }
-
-    //Calculating relevance indexes:
-    std::vector<RelativeIndex> answer{};
-
-    if (absoluteIndexes.empty()) return answer;
-
-    for (size_t i = 0; i < absoluteIndexes.size(); ++i)
-    {
-        RelativeIndex relativeIndex{};
-        relativeIndex.doc_id = absoluteIndexes.size() - i - 1;
-        relativeIndex.rank = (float)absoluteIndexes[i] / (float)maxAbsoluteIndex;
-        answer.push_back(relativeIndex);
-    }
-
-    // Print unsorted answer:
-    std::cout << "Unsorted answer:\n";
-    for (auto value : answer)
-    {
-        std::cout << "doc " << value.doc_id << " : rank " << value.rank << "\n";
-    }
-
-    std::sort(answer.begin(), answer.end(), [](RelativeIndex &left, RelativeIndex &right)
-    {
-        return left.rank > right.rank;
-    });
-
-    // Print sorted answer:
-    std::cout << "Sorted answer:\n";
-    for (auto value : answer)
-    {
-        std::cout << "doc " << value.doc_id << " : rank " << value.rank << "\n";
-    }
-
-return answer;
-
-}
-
-*/
-
