@@ -1,11 +1,1 @@
-{
-  "request0":
-{"relevance":[
-  {"docid":1,"rank":1.0},
-  {"docid":0,"rank":0.699999988079071}],
-  "result":true},
-  "request1":
-  {"relevance":[
-    {"docid":1,"rank":1.0},
-    {"docid":0,"rank":0.6000000238418579}],
-    "result":true}}
+{"request0":{"relevance":[{"docid":1,"rank":1.0},{"docid":0,"rank":0.699999988079071}],"result":true},"request1":{"relevance":[{"docid":1,"rank":1.0},{"docid":0,"rank":0.6000000238418579}],"result":true}}

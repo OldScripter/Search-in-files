@@ -3,32 +3,48 @@
 #include "include/InvertedIndex.h"
 #include "include/SearchServer.h"
 
+//TODO: make function of conversion server answers to JSON answers.
+
+/**
+ * Write answers to the JSON file answers.json
+ * @param [in] allRequestsResults result of search for relevant pages
+ */
+void writeAnswers(const std::vector<std::vector<RelativeIndex>>& allRequestsResults)
+{
+    if (allRequestsResults.empty())
+    {
+        std::cout << "No matches are found.\n";
+        return;
+    }
+    std::vector<std::vector<std::pair<int, float>>> allRequestsResultsReadyForJSON;
+    for (auto& requestResult : allRequestsResults)
+    {
+        std::vector<std::pair<int, float>> requestResultReadyForJSON;
+        for (auto& pageRelevance : requestResult)
+        {
+            std::pair<int, float> relevancePair;
+            relevancePair.first = (int) pageRelevance.doc_id;
+            relevancePair.second = pageRelevance.rank;
+            requestResultReadyForJSON.push_back(relevancePair);
+        }
+        allRequestsResultsReadyForJSON.push_back(requestResultReadyForJSON);
+    }
+    ConverterJSON::getInstance()->putAnswers(allRequestsResultsReadyForJSON);
+}
+
+
 int main()
 {
-    std::cout << "Test\n";
     ConverterJSON::getInstance()->readConfigFile();
     ConverterJSON::getInstance()->readRequestFile();
     std::vector<std::string>* documents = ConverterJSON::getInstance()->getFilesList();
     InvertedIndex::getInstance()->updateDocumentBase(*documents);
 
-    //Test:
+    std::cout << "Searching...\n";
     SearchServer searchServer(*InvertedIndex::getInstance());
-    auto relevances = searchServer.search(ConverterJSON::getInstance()->getRequests());
-    std::vector<std::vector<std::pair<int, float>>> answers;
-    for (auto& relevancesGroup : relevances)
-    {
-        std::vector<std::pair<int, float>> answersGroup;
-        for (auto& relevance : relevancesGroup)
-        {
-            std::pair<int, float> relevancePair;
-            relevancePair.first = (int) relevance.doc_id;
-            relevancePair.second = relevance.rank;
-            answersGroup.push_back(relevancePair);
-        }
-        answers.push_back(answersGroup);
-    }
-    ConverterJSON::getInstance()->putAnswers(answers);
-    // TODO:ConverterJSON::getInstance()->putAnswers() - возможно станет ясно зачем нужен второй вектор.
+    auto allRequestsResults = searchServer.search(ConverterJSON::getInstance()->getRequests());
+    writeAnswers(allRequestsResults);
+    std::cout << "End of search.\n";
 
     return 0;
 }

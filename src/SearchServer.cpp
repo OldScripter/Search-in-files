@@ -59,10 +59,10 @@ std::vector<size_t> SearchServer::getDocumentsWithAllWords(const std::vector<std
     }), docIds.end());
 
     // Getting unique ids from docIds:
-   std::set<size_t> uniqueDocIds (docIds.begin(), docIds.end());
-   docIds.clear();
-   docIds.assign(uniqueDocIds.begin(), uniqueDocIds.end());
-   return docIds;
+    std::set<size_t> uniqueDocIds (docIds.begin(), docIds.end());
+    docIds.clear();
+    docIds.assign(uniqueDocIds.begin(), uniqueDocIds.end());
+    return docIds;
 }
 
 void SearchServer::sortWordsAscendingToEntries(std::vector<std::pair<std::string, size_t>>& wordsEntries)
