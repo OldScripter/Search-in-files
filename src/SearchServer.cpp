@@ -87,7 +87,7 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
     std::vector<std::vector<RelativeIndex>> result{};
     if (queries_input.empty())
     {
-        std::cerr << "Requests are empty.\n";
+        std::cout << "Requests are empty.\n";
         return result;
     }
 
@@ -95,153 +95,56 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
     {
         // Get unique words from query
         std::set<std::string> uniqueWords = getUniqueWords(query);
-        // TODO: Check unique words:
+        if (uniqueWords.empty())
         {
-            std::cout << "1. TEST - unique words:\n";
-            for (auto word : uniqueWords) {
-                std::cout << word << "\t";
-            }
-            std::cout << "\nEND OF TEST - - - - -\n";
-            //---------------------------------------
+            std::cout << "\t-bad request.\n";
+            continue;
         }
-
 
         // Get the entry count for each word
         auto wordsEntries = getWordsEntries(uniqueWords);
-        // TODO: Check words entries:
-        {
-            std::cout << "2. TEST - wordsEntries:\n";
-            for (auto entry : wordsEntries) {
-                std::cout << "word: ";
-                std::cout << entry.first << "\t";
-                std::cout << "entries: ";
-                std::cout << entry.second << "\n";
-            }
-            std::cout << "END OF TEST - - - - -\n";
-            //---------------------------------------
-        }
 
         // Sort unique words according to entry count in ascending direction
         sortWordsAscendingToEntries(wordsEntries);
-        if (wordsEntries.back().second == 0)
-        {
-            std::cerr << "No matches are found.\n";
-            return result;
-        }
-        // TODO: Check words entries:
-        {
-            std::cout << "3. TEST - wordsEntries after sort:\n";
-            for (auto entry : wordsEntries) {
-                std::cout << "word: ";
-                std::cout << entry.first << "\t";
-                std::cout << "entries: ";
-                std::cout << entry.second << "\t";
-            }
-            std::cout << "\nEND OF TEST - - - - -\n";
-            //---------------------------------------
-        }
 
-        // Get the document list of documents for each word
-        // and get documents with all words in list as a vector:
+        // Get the document list of documents
         auto documentIds = getDocumentsWithAllWords(wordsEntries);
-        // TODO: Check doc ids:
+        std::string docOrDocs = documentIds.size() == 1 ? " document " : " documents ";
+        std::string wordOrWords = uniqueWords.size() == 1 ? " word: " : " words: ";
+        std::cout << "\t-found " << documentIds.size() << docOrDocs << "with" << wordOrWords;
+        for (auto word : uniqueWords)
         {
-            std::cout << "4. TEST - doc ids:\n";
-            for (auto docId : documentIds) {
-                std::cout << docId << "\t";
-            }
-            std::cout << "\nEND OF TEST - - - - -\n";
-            //---------------------------------------
+            std::cout << word << " ";
         }
+        std::cout << "\n";
 
         // Get absolute relevance and maximal relevance:
-        std::vector<RelativeIndex> relativeIndexes;
+        std::vector<RelativeIndex>* relativeIndexes = new std::vector<RelativeIndex>();
         size_t maxRelevance {0};
         for (const auto& docId : documentIds)
         {
             size_t absoluteRelevance = getAbsoluteRelevanceForDocument(docId, uniqueWords);
             auto* relativeIndex = new RelativeIndex(docId, absoluteRelevance);
 
-            relativeIndexes.push_back(*relativeIndex);
+            relativeIndexes->push_back(*relativeIndex);
             if (absoluteRelevance > maxRelevance) maxRelevance = absoluteRelevance;
-        }
-        // TODO: MaxAbsRelevance:
-        {
-            std::cout << "5. TEST - max abs relevance:\n";
-            std::cout << maxRelevance;
-            std::cout << "\nEND OF TEST - - - - -\n";
-            //---------------------------------------
-
-            // TODO: Absolute indexes before sort:
-            std::cout << "6. TEST - absolute relevances before sorting:\n";
-            for (auto ind : relativeIndexes) {
-                std::cout << "dicId: ";
-                std::cout << ind.doc_id << "\t";
-                std::cout << "abs_ind: ";
-                std::cout << ind.absoluteIndex << "\t";
-            }
-            std::cout << "\nEND OF TEST - - - - -\n";
-            //---------------------------------------
         }
 
         // Get relative relevance for each document:
-        for (auto& relativeIndex : relativeIndexes)
+        for (auto& relativeIndex : *relativeIndexes)
         {
-            relativeIndex.rank = (float) (relativeIndex.absoluteIndex) / (float) maxRelevance;
-        }
-                // TODO: Relative indexes before sort:
-        {
-            std::cout << "7. TEST - relative relevances before sorting:\n";
-            for (auto ind : relativeIndexes) {
-                std::cout << "dicId: ";
-                std::cout << ind.doc_id << "\t";
-                std::cout << "abs_ind: ";
-                std::cout << ind.rank << "\t";
-            }
-            std::cout << "\nEND OF TEST - - - - -\n";
-            //---------------------------------------
+            if (maxRelevance != 0) relativeIndex.rank = (float) (relativeIndex.absoluteIndex) / (float) maxRelevance;
+            else relativeIndex.rank = 0;
         }
 
         // Sort the documents according to relevance descending
-        std::sort(relativeIndexes.begin(), relativeIndexes.end(), [&relativeIndexes](RelativeIndex &left, RelativeIndex &right)
+        std::sort(relativeIndexes->begin(), relativeIndexes->end(), [&relativeIndexes](RelativeIndex &left, RelativeIndex &right)
         {
            return left.rank > right.rank;
         });
 
-        // TODO: Relative indexes before sort:
-        std::cout << "8. TEST - relative relevances after sorting:\n";
-        for (auto ind : relativeIndexes)
-        {
-            std::cout << "dicId: ";
-            std::cout << ind.doc_id << "\t";
-            std::cout << "abs_ind: ";
-            std::cout << ind.rank << "\t";
-        }
-        std::cout << "\nEND OF TEST - - - - -\n";
-        //---------------------------------------
-
         // Push this vector to the result:
-        result.push_back(relativeIndexes);
+        result.push_back(*relativeIndexes);
     }
-
-    // TODO: check of search function result - delete in release -----------
-    std::cout << "+ + + Returned from server.search:\n";
-    for (auto answer : result)
-    {
-        for (auto subanswer : answer)
-        {
-            std::cout << "doc_id: ";
-            std::cout << subanswer.doc_id << ";\t";
-            std::cout << "abs_ind: ";
-            std::cout << subanswer.absoluteIndex << ";\t";
-            std::cout << "rel_ind: ";
-            std::cout << subanswer.rank << "\n";
-        }
-        std::cout << "- - - - -\n";
-    }
-    std::cout << "\n";
-    //---------------------------------------------------------------------
-
-    // return the answer
     return result;
 }

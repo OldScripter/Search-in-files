@@ -1,5 +1,8 @@
 #include "../include/ConverterJSON.h"
 
+const int LINE_LENGTH = 46;
+const int HEADER_SPACER = 15;
+
 //static members initialization -------------------------
 ConverterJSON* ConverterJSON::instance = nullptr;
 ConverterJSON* ConverterJSON::getInstance()
@@ -32,14 +35,14 @@ void ConverterJSON::putAnswers(std::vector<std::vector<std::pair<int, float>>> a
     nlohmann::json answersDict;
     if (!answers.empty())
     {
-        std::cout << "Clearing answers file...";
-        clearFileContent(ANSWERS_FILE_PATH) ? std::cout << "OK\n" : std::cout << "FAIL\n";
+        std::cout << "Clearing answers file... ";
+        clearFileContent(ANSWERS_FILE_PATH) ? std::cout << "done\n" : std::cout << "error\n";
 
-        std::cout << "Answers pushing...\n";
+        std::cout << "Answers pushing... ";
         std::ofstream answersFile(ANSWERS_FILE_PATH, std::ios_base::app);
         if (answersFile.is_open())
         {
-            int requestCount = 0;
+            int requestCount {0};
             nlohmann::json answerDictionary;
             for (auto request : answers)
             {
@@ -52,8 +55,12 @@ void ConverterJSON::putAnswers(std::vector<std::vector<std::pair<int, float>>> a
                 else
                 {
                     auto relevance_array = nlohmann::json::array();
+                    int relevanceID{0};
                     for (auto relevance : request)
                     {
+                        ++relevanceID;
+                        if (relevanceID > maxResponses) break;
+
                         auto relevance_member = nlohmann::json::object();
                         relevance_member["docid"] = relevance.first;
                         relevance_member["rank"] = relevance.second;
@@ -65,12 +72,12 @@ void ConverterJSON::putAnswers(std::vector<std::vector<std::pair<int, float>>> a
             }
             answersFile << answersDict;
             answersFile.close();
+            std::cout << "done\n";
         }
         else
         {
-            std::cerr << "\t - file not found error: " + ANSWERS_FILE_PATH << "\n";
+            std::cout << "\t error - file not found: " + ANSWERS_FILE_PATH << "\n";
         }
-        std::cout << "- - - - - - - - -\n";
     }
     else
     {
@@ -85,7 +92,6 @@ std::vector<std::string>* ConverterJSON::getFilesList()
 
 void ConverterJSON::readConfigFile()
 {
-    std::cout << "Configuration reading...\n";
     std::ifstream configFile(CONFIG_FILE_PATH);
     if (configFile.is_open())
     {
@@ -97,32 +103,29 @@ void ConverterJSON::readConfigFile()
         textDocuments.clear();
         for (auto f : configDictionary["files"])
         {
-            textDocuments.push_back(f); //TODO: wrong realization - need to put in the CONTENT, not file names. 
-            // я бы предложил перенести этот функционал в класс InvertedIndex, а здесь оставить только вывод списка файлов
-            // из конфигурационного файла. 
+            textDocuments.push_back(f);
         }
 
-        //TODO: just for test (delete in release version)
-        for (auto file : textDocuments)
-        {
-            std::cout << file << "\n";
-        }
-        std::cout << applicationName << "\n";
-        std::cout << "version: " << applicationVersion << "\n";
-        std::cout << "max responses per request: " << maxResponses << "\n";
-        //------------------------------------------------------------------
+        for (int i = 0; i < HEADER_SPACER; ++i) {std::cout << "=";}
+        std::cout << "[Initialization]";
+        for (int i = 0; i < HEADER_SPACER; ++i) {std::cout << "=";}
+        std::cout << "\n" << applicationName << "\n";
+        std::cout << "Version: " << applicationVersion << "\n";
+        std::cout << "Max responses per request: " << maxResponses << "\n";
+        std::cout << "Files library: " << textDocuments.size() << "\n";
+        for (int i = 0; i < LINE_LENGTH; ++i) {std::cout << "-";}
+        std::cout << "\n";
         configFile.close();
     }
     else
     {
         std::cerr << "\t - file not found error: " + CONFIG_FILE_PATH << "\n";
     }
-    std::cout << "- - - - - - - - -\n";
 }
 
 void ConverterJSON::readRequestFile()
 {
-    std::cout << "Requests reading...\n";
+    std::cout << "Requests reading: ";
     std::ifstream configFile(REQUEST_FILE_PATH);
     if (configFile.is_open())
     {
@@ -133,20 +136,14 @@ void ConverterJSON::readRequestFile()
         {
             requests.push_back(f);
         }
-
-        //TODO: just for test (delete in release version)
-        for (auto s : requests)
-        {
-            std::cout << s << "\n";
-        }
-        //------------------------------------------------------------------
         configFile.close();
+        std::string requestOrRequests = requests.size() == 1 ? " request is " : " requests are ";
+        std::cout << requests.size() << requestOrRequests << "found\n";
     }
     else
     {
         std::cerr << "\t - file not found error: " + REQUEST_FILE_PATH << "\n";
     }
-    std::cout << "- - - - - - - - -\n";
 }
 
 bool ConverterJSON::clearFileContent(const std::string path)

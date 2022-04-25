@@ -3,8 +3,6 @@
 #include "include/InvertedIndex.h"
 #include "include/SearchServer.h"
 
-//TODO: make function of conversion server answers to JSON answers.
-
 /**
  * Write answers to the JSON file answers.json
  * @param [in] allRequestsResults result of search for relevant pages
