@@ -6,6 +6,8 @@
 #include <mutex>
 #include <fstream>
 #include <string>
+#include <sstream>
+#include <algorithm>
 
 struct Entry 
 {
@@ -63,12 +65,11 @@ class InvertedIndex
      * @param [in] fileContent - std::string with file content
      * @param [in] docId - id of the file
      */
-    static void indexTheFile(std::string fileContent, size_t docId);
+    static void indexTheFile(const std::string& fileContent, size_t docId);
 
     static InvertedIndex* instance;
     static std::map<int, std::string> document_list; // map of documents (unique id and file name) for search in
     static std::mutex mutexIndexMap; // access to index map
-    static std::vector<std::string> docs; // list of documents content
     static std::map<std::string, std::vector<Entry>> frequencyDictionary; // frequency dictionary for all files
     static bool indexingIsOngoing;
 

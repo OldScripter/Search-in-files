@@ -3,8 +3,17 @@
 std::set<std::string> SearchServer::getUniqueWords(const std::string& request)
 {
     std::set<std::string> result;
-    std::string word;
-    for (char character :  request)
+    //std::string word;
+    std::istringstream ist(request);
+    for (std::string word; ist >> word; )
+    {
+        //Convert symbols to lower case:
+        std::transform(word.begin(), word.end(), word.begin(),
+                       [](unsigned char c){ return std::tolower(c); });
+
+        result.emplace(word);
+    }
+    /*for (char character :  request)
     {
         if (character != ' ')
         {
@@ -15,8 +24,7 @@ std::set<std::string> SearchServer::getUniqueWords(const std::string& request)
             if (!word.empty()) result.emplace(word);
             word = "";
         }
-    }
-    if (!word.empty()) result.emplace(word);
+    }*/
     return result;
 }
 

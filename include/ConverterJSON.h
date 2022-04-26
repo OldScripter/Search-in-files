@@ -18,7 +18,7 @@ class ConverterJSON
      * Get the files content in string vector form
      * @return content of files listed in config.json
      */
-    std::vector<std::string> getTextDocuments();
+    std::vector<std::string>* getTextDocuments();
 
     /**
      * Get the max responses per request
@@ -48,12 +48,6 @@ class ConverterJSON
      */
     void readRequestFile();
 
-    /**
-     * Get the Files List specified in config.json
-     * @return pointer for the files list
-     */
-    std::vector<std::string>* getFilesList();
-
     private:
     ConverterJSON() = default; // private constructor for singleton realization
     
@@ -66,6 +60,7 @@ class ConverterJSON
     std::string applicationName;
     std::string applicationVersion;
     int maxResponses;
+    std::vector<std::string> resourcesPaths;
     std::vector<std::string> textDocuments;
     std::vector<std::string> requests;
 

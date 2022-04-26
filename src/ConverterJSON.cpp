@@ -15,9 +15,32 @@ ConverterJSON* ConverterJSON::getInstance()
 }
 //---------------------------------------------------------
 
-std::vector<std::string> ConverterJSON::getTextDocuments()
+std::vector<std::string>* ConverterJSON::getTextDocuments()
 {
-    return textDocuments; 
+    textDocuments.clear();
+    for (const auto& doc : resourcesPaths)
+    {
+        std::ifstream docReadingStream(doc);
+        if (docReadingStream.is_open())
+        {
+            std::string buffer;
+            while (!docReadingStream.eof())
+            {
+                std::string b;
+                docReadingStream >> b;
+                buffer += b;
+                buffer += " ";
+            }
+            textDocuments.push_back(buffer);
+            docReadingStream.close();
+        }
+        else
+        {
+            std::cerr << "File content reading:\t- file not found error " + doc << "\n";
+        }
+    }
+    std::cout << "Input docs read success: " << resourcesPaths.size() << " files\n";
+    return &textDocuments;
 }
 
 int ConverterJSON::getResponsesLimit() const
@@ -85,11 +108,6 @@ void ConverterJSON::putAnswers(std::vector<std::vector<std::pair<int, float>>> a
     }
 }
 
-std::vector<std::string>* ConverterJSON::getFilesList()
-{
-    return &textDocuments;
-}
-
 void ConverterJSON::readConfigFile()
 {
     std::ifstream configFile(CONFIG_FILE_PATH);
@@ -100,10 +118,10 @@ void ConverterJSON::readConfigFile()
         applicationName = configDictionary["config"]["name"];
         applicationVersion = configDictionary["config"]["version"];
         maxResponses = configDictionary["config"]["max_responses"];
-        textDocuments.clear();
+        resourcesPaths.clear();
         for (auto f : configDictionary["files"])
         {
-            textDocuments.push_back(f);
+            resourcesPaths.push_back(f);
         }
 
         for (int i = 0; i < HEADER_SPACER; ++i) {std::cout << "=";}
@@ -112,7 +130,7 @@ void ConverterJSON::readConfigFile()
         std::cout << "\n" << applicationName << "\n";
         std::cout << "Version: " << applicationVersion << "\n";
         std::cout << "Max responses per request: " << maxResponses << "\n";
-        std::cout << "Files library: " << textDocuments.size() << "\n";
+        std::cout << "Files library: " << resourcesPaths.size() << "\n";
         for (int i = 0; i < LINE_LENGTH; ++i) {std::cout << "-";}
         std::cout << "\n";
         configFile.close();

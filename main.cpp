@@ -35,7 +35,7 @@ int main()
     //Initialization:
     ConverterJSON::getInstance()->readConfigFile();
     ConverterJSON::getInstance()->readRequestFile();
-    std::vector<std::string>* documents = ConverterJSON::getInstance()->getFilesList();
+    std::vector<std::string>* documents = ConverterJSON::getInstance()->getTextDocuments();
     InvertedIndex::getInstance()->updateDocumentBase(*documents);
 
     //Search:
