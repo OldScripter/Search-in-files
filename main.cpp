@@ -30,19 +30,21 @@ void writeAnswers(const std::vector<std::vector<RelativeIndex>>& allRequestsResu
     ConverterJSON::getInstance()->putAnswers(allRequestsResultsReadyForJSON);
 }
 
-
 int main()
 {
+    //Initialization:
     ConverterJSON::getInstance()->readConfigFile();
     ConverterJSON::getInstance()->readRequestFile();
     std::vector<std::string>* documents = ConverterJSON::getInstance()->getFilesList();
     InvertedIndex::getInstance()->updateDocumentBase(*documents);
 
+    //Search:
     std::cout << "Searching...\n";
     SearchServer searchServer(*InvertedIndex::getInstance());
     auto allRequestsResults = searchServer.search(ConverterJSON::getInstance()->getRequests());
     writeAnswers(allRequestsResults);
     std::cout << "End of search.\n";
-
+    //Pause the console - uncomment it if pause is necessary:
+    //std::cin.get();
     return 0;
 }

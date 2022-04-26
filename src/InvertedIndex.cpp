@@ -103,7 +103,6 @@ void InvertedIndex::indexTheFile(std::string fileContent, size_t docId)
         }
     }
     mutexIndexMap.unlock();
-
 }
 
 void InvertedIndex::indexAllDocs()
@@ -136,22 +135,17 @@ void InvertedIndex::indexAllDocs()
 
 size_t InvertedIndex::getWordCountInDoc(const std::string& word, const size_t doc_id) const
 {
-    if (indexingIsOngoing)
-    {
+    if (indexingIsOngoing) {
         std::cout << "Index is ongoing, please repeat the request later.\n";
         return 0;
     }
     auto it = frequencyDictionary.find(word);
-    if (it != frequencyDictionary.end())
-    {
+    if (it != frequencyDictionary.end()) {
         auto entryVector = it->second;
-        for (auto entry : entryVector)
-        {
+        for (auto entry : entryVector) {
             if (entry.doc_id == doc_id) return entry.count;
         }
-    }
-    else
-    {
+    } else {
         std::cout << "Word \"" << word << "\" not found.\n";
         return 0;
     }
