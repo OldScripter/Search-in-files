@@ -10,11 +10,13 @@
 struct RelativeIndex
 {
     size_t doc_id;
-    size_t absoluteIndex; // Added for convenience.
     float rank;
+    size_t absoluteIndex = 0; // Added for convenience.
+
 
     // Added for convenience:
-    RelativeIndex(size_t docId, size_t absoluteIndex): doc_id(docId), absoluteIndex(absoluteIndex){};
+   // RelativeIndex(size_t docId, size_t absoluteIndex): doc_id(docId), absoluteIndex(absoluteIndex){};
+    //RelativeIndex(size_t docId, float relativeIndex): doc_id(docId), rank(relativeIndex){};
 
     bool operator ==(const RelativeIndex& other) const 
     {

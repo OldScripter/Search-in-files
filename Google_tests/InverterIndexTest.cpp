@@ -1,13 +1,6 @@
 #include "gtest/gtest.h"
 #include "../include/InvertedIndex.h"
 
-TEST(InitialTestSuite, sample_test)
-{
-    int i {0};
-    i = 2 + 1;
-    EXPECT_EQ(i, 3);
-}
-
 void TestInvertedIndexFunctionality(
         const std::vector<std::string>& docs,
         const std::vector<std::string>& requests,

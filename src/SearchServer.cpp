@@ -3,7 +3,6 @@
 std::set<std::string> SearchServer::getUniqueWords(const std::string& request)
 {
     std::set<std::string> result;
-    //std::string word;
     std::istringstream ist(request);
     for (std::string word; ist >> word; )
     {
@@ -132,7 +131,9 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
         for (const auto& docId : documentIds)
         {
             size_t absoluteRelevance = getAbsoluteRelevanceForDocument(docId, uniqueWords);
-            auto* relativeIndex = new RelativeIndex(docId, absoluteRelevance);
+            auto* relativeIndex = new RelativeIndex();
+            relativeIndex->doc_id = docId;
+            relativeIndex->absoluteIndex = absoluteRelevance;
 
             relativeIndexes->push_back(*relativeIndex);
             if (absoluteRelevance > maxRelevance) maxRelevance = absoluteRelevance;
