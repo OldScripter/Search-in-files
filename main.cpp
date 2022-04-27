@@ -41,6 +41,7 @@ int main()
     //Search:
     std::cout << "Searching...\n";
     SearchServer searchServer(*InvertedIndex::getInstance());
+    searchServer.setMaxResponses(ConverterJSON::getInstance()->getMaxResponses());
     auto allRequestsResults = searchServer.search(ConverterJSON::getInstance()->getRequests());
     writeAnswers(allRequestsResults);
     std::cout << "End of search.\n";

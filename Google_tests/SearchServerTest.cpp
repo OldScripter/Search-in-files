@@ -54,9 +54,9 @@ TEST(TestCaseSearchServer, TestTop5) {
             {
                     {7, 1},
                     {14, 1},
-                    {0, 0.4},
-                    {1, 0.4},
-                    {2, 0.4}
+                    {0, 0.67},
+                    {1, 0.67},
+                    {2, 0.67}
             }
     };
     InvertedIndex* idx = InvertedIndex::getInstance();

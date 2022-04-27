@@ -177,3 +177,7 @@ bool ConverterJSON::clearFileContent(const std::string path)
         return false;
     }
 }
+
+int ConverterJSON::getMaxResponses() const {
+    return maxResponses;
+}

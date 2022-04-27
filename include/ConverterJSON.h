@@ -48,6 +48,12 @@ class ConverterJSON
      */
     void readRequestFile();
 
+    /**
+     * Get maximal responses quantity, which can be returned be Search Server
+     * @return maximal responses quantity
+     */
+    int getMaxResponses() const;
+
     private:
     ConverterJSON() = default; // private constructor for singleton realization
     

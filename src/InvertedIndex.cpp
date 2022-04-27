@@ -3,7 +3,7 @@
 const int HEADER_SPACER = 15;
 
 //static members initialization -----------------------------
-InvertedIndex* InvertedIndex::instance = nullptr;
+InvertedIndex* InvertedIndex::instance {nullptr};
 std::map<int, std::string> InvertedIndex::document_list = {};
 std::mutex InvertedIndex::mutexIndexMap;
 std::map<std::string, std::vector<Entry>> InvertedIndex::frequencyDictionary = {};
@@ -39,12 +39,12 @@ void InvertedIndex::updateDocumentBase(const std::vector<std::string>& input_doc
         index.join();
     }
     indexingIsOngoing = false;
-    std::cout << "Frequency map:\n";
-    printTheFreqMap();
-    for (int i = 0; i < HEADER_SPACER; ++i) {std::cout << "=";}
-    std::cout << "[Ready for search]";
-    for (int i = 0; i < HEADER_SPACER; ++i) {std::cout << "=";}
-    std::cout << "\n";
+    //Uncomment for debug: std::cout << "Frequency map:\n";
+    //Uncomment for debug: printTheFreqMap();
+    //Uncomment for debug: for (int i = 0; i < HEADER_SPACER; ++i) {std::cout << "=";}
+    //Uncomment for debug: std::cout << "[Ready for search]";
+    //Uncomment for debug: for (int i = 0; i < HEADER_SPACER; ++i) {std::cout << "=";}
+    //Uncomment for debug: std::cout << "\n";
 }
 
 std::vector<Entry> InvertedIndex::getWordCount(const std::string& word)
@@ -107,14 +107,29 @@ size_t InvertedIndex::getWordCountInDoc(const std::string& word, const size_t do
         std::cout << "Index is ongoing, please repeat the request later.\n";
         return 0;
     }
+    size_t wordCountInDoc = 0;
     auto it = frequencyDictionary.find(word);
     if (it != frequencyDictionary.end()) {
         auto entryVector = it->second;
         for (auto entry : entryVector) {
-            if (entry.doc_id == doc_id) return entry.count;
+            if (entry.doc_id == doc_id) wordCountInDoc += entry.count;
         }
     } else {
         std::cout << "Word \"" << word << "\" not found.\n";
-        return 0;
+    }
+    return wordCountInDoc;
+}
+
+void InvertedIndex::printTheFreqMap()
+{
+    if (frequencyDictionary.empty()) std::cerr << "Empty map!\n";
+
+    for (const auto& word : frequencyDictionary)
+    {
+        std::cout << word.first << ":\n";
+        for (auto freq : word.second)
+        {
+            std::cout << "\t- " << freq.doc_id << ", " << freq.count << "\n";
+        }
     }
 }
