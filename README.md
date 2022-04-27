@@ -1,6 +1,6 @@
-# Search-in-files
+![# Search-in-files](search-in-files.png)
 
-Search engine for words in files
+<i> Search engine for words in files.</i>
 ## Description
 
 ## Technologies
