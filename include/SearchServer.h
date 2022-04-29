@@ -14,21 +14,16 @@ struct RelativeIndex
     float rank;
     size_t absoluteIndex = 0; // Added for convenience.
 
-
-    // Added for convenience:
-   // RelativeIndex(size_t docId, size_t absoluteIndex): doc_id(docId), absoluteIndex(absoluteIndex){};
-    //RelativeIndex(size_t docId, float relativeIndex): doc_id(docId), rank(relativeIndex){};
-
     bool operator ==(const RelativeIndex& other) const 
     {
         return (doc_id == other.doc_id && rank == other.rank);
     }
-
     bool operator > (const RelativeIndex& other) const
     {
         return (rank > other.rank || (rank == other.rank && doc_id < other.doc_id));
     }
 };
+
 class SearchServer 
 {
     public:
@@ -56,29 +51,34 @@ class SearchServer
 
     InvertedIndex _index;
     int maxResponses {5};
+
     /**
      * Getting unique words from request line
      * @param [in] request - separate string from request.json
      * @return set of unique words
      */
     std::set<std::string> getUniqueWords(const std::string& request);
+
     /**
      * Get the vector of entries for words set
      * @param [in] words - set of words
      * @return vector of entries
      */
     std::vector<std::pair<std::string, size_t>> getWordsEntries(const std::set<std::string>& words);
+
     /**
      * Sort the entries vector in ascending direction of entries count
      * @param [in/out] wordsEntries - entries vector
      */
     void sortWordsAscendingToEntries(std::vector<std::pair<std::string, size_t>>& wordsEntries);
+
     /**
      * Get the vector of documents where all words from request can be found
      * @param [in] words - vector of pairs "word - entry count"
      * @return the vector of document ids where all words can be found
      */
     std::vector<size_t> getAllDocumentsWithWords(const std::vector<std::pair<std::string, size_t>>& words);
+
     /**
      * Calculate absolute relevance of the document for certain words
      * @param [in] docId - document id

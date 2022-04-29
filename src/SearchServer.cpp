@@ -1,4 +1,4 @@
-#include "../include/SearchServer.h"
+#include "SearchServer.h"
 
 std::set<std::string> SearchServer::getUniqueWords(const std::string& request)
 {
@@ -40,7 +40,7 @@ std::vector<size_t> SearchServer::getAllDocumentsWithWords(const std::vector<std
     // Getting entries and docIds:
     for (const auto& wordAndEntry : words)
     {
-        auto entries = InvertedIndex::getInstance()->getWordCount(wordAndEntry.first);
+        auto entries = _index.getWordCount(wordAndEntry.first);
         for (auto entry : entries)
         {
             docIds.push_back(entry.doc_id);
@@ -112,8 +112,8 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
             auto* relativeIndex = new RelativeIndex();
             relativeIndex->doc_id = docId;
             relativeIndex->absoluteIndex = absoluteRelevance;
-
             relativeIndexes->push_back(*relativeIndex);
+            delete relativeIndex;
             if (absoluteRelevance > maxAbsoluteRelevance) maxAbsoluteRelevance = absoluteRelevance;
         }
 
@@ -144,6 +144,7 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
 
         // Push this vector to the result:
         result.push_back(*relativeIndexes);
+        delete relativeIndexes;
     }
     return result;
 }

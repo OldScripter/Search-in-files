@@ -59,9 +59,9 @@ class ConverterJSON
     
     static ConverterJSON* instance;
 
-    const std::string CONFIG_FILE_PATH = "..//config.json";     // TODO: Change in release version
-    const std::string REQUEST_FILE_PATH = "..//requests.json";  // TODO: Change in release version
-    const std::string ANSWERS_FILE_PATH = "..//answers.json";   // TODO: Change in release version
+    const std::string CONFIG_FILE_PATH = "config.json";
+    const std::string REQUEST_FILE_PATH = "requests.json";
+    const std::string ANSWERS_FILE_PATH = "answers.json";
 
     std::string applicationName;
     std::string applicationVersion;
