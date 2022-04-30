@@ -52,7 +52,7 @@ Default content:<br>
 }
 ```
 
-* config.json<br>
+* requests.json<br>
 File where specified requests for search.<br>
 Each separate request sholud be entered after ',' on new line. Example below.<br>
 Example content:<br>
