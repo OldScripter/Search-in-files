@@ -19,9 +19,6 @@ https://cmake.org/<br>
 https://github.com/nlohmann/json<br>
 
 ## Building & Running
-* Before building clean the outputfolder:<br>
-`cmake --build .\cmake-build-debug --target clean -- -j 6`<br>
-
 * If you would like to build all project (appliccation and tests), than run:<br>
 `cmake --build .\cmake-build-debug --target all -- -j 6`<br>
   * To run application type:<br>
