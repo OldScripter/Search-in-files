@@ -19,6 +19,20 @@ https://cmake.org/<br>
 https://github.com/nlohmann/json<br>
 
 ## Building
+Before building clean the outputfolder:<br>
+`cmake --build .\cmake-build-debug --target clean -- -j 6`<br>
+
+If you would like to build all project (appliccation and tests), than run:<br>
+`cmake --build .\cmake-build-debug --target all -- -j 6`<br>
+To run application type:<br>
+`.\bin\Search_in_files`<br>
+To run tests type:<br>
+`.\bin\Google_Tests_run`<br>
+
+If you would like to build only application:<br>
+`cmake --build .\cmake-build-debug --target Search_in_files -- -j 6`<br>
+To run application type:<br>
+`.\bin\Search_in_files`<br>
 
 ## Running
 When the building is finished Just run from 
