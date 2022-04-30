@@ -18,21 +18,92 @@ https://cmake.org/<br>
 ![GitHub author](https://img.shields.io/badge/JSON-3.10.5-orange?style=for-the-badge)<br>
 https://github.com/nlohmann/json<br>
 
-## Building
-Before building clean the outputfolder:<br>
+## Building & Running
+* Before building clean the outputfolder:<br>
 `cmake --build .\cmake-build-debug --target clean -- -j 6`<br>
 
-If you would like to build all project (appliccation and tests), than run:<br>
+* If you would like to build all project (appliccation and tests), than run:<br>
 `cmake --build .\cmake-build-debug --target all -- -j 6`<br>
-To run application type:<br>
+  * To run application type:<br>
 `.\bin\Search_in_files`<br>
-To run tests type:<br>
+  * To run tests type:<br>
 `.\bin\Google_Tests_run`<br>
 
-If you would like to build only application:<br>
+* If you would like to build only application:<br>
 `cmake --build .\cmake-build-debug --target Search_in_files -- -j 6`<br>
-To run application type:<br>
+  * To run application type:<br>
 `.\bin\Search_in_files`<br>
 
-## Running
-When the building is finished Just run from 
+## Files specification
+* config.json<br>
+File where specified name and version of application.<br>
+Here you can also change the maximal quantity of relevant pages that will be put into answers.json (max_respones).<br>
+Default content:<br>
+```json
+{
+    "config": 
+    {
+        "name": "FileSearchEngine",
+        "version": "0.1",
+        "max_responses": 5
+    },
+    "files": 
+    [
+        "resources/file001.txt",
+        "resources/file002.txt"
+    ]
+}
+```
+
+* config.json<br>
+File where specified requests for search.<br>
+Each separate request sholud be entered after ',' on new line. Example below.<br>
+Example content:<br>
+```json
+{
+    "requests":
+    [
+        "tiger fox",
+        "wolf bird",
+        "monkey"
+    ]
+}
+```
+* answers.json<br>
+File where search result will be written in JSON format.<br>
+Example content:<br>
+```json
+{
+  "request0": {
+    "relevance": [
+      {
+        "docid": 1,
+        "rank": 1.0
+      },
+      {
+        "docid": 0,
+        "rank": 0.6700000166893005
+      }
+    ],
+    "result": true
+  },
+  "request1": {
+    "relevance": [
+      {
+        "docid": 0,
+        "rank": 1.0
+      },
+      {
+        "docid": 1,
+        "rank": 1.0
+      }
+    ],
+    "result": true
+  },
+  "request2": {
+    "relevance": [],
+    "result": false
+  }
+}
+```
+<i>NOTE:<br>docid - identificator of a relevant document,<br>rank - relative index,<br>result - true (if relevance is found), or false (if document absolutely not relevant for certain request).</i>
