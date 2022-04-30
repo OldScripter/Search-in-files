@@ -25,12 +25,6 @@ include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json ${CMAKE_EXE_LINKER_FLAGS})
 
 # Copy auxiliary files to binary folder: ==========================================================
-#[[file(GLOB RESOURCES "${CMAKE_CURRENT_SOURCE_DIR}/resources/*.*")
-file(COPY RESOURCES DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/config.json DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/requests.json DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/answers.json DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})]]
-
 add_custom_command(
         TARGET ${PROJECT_NAME}  POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
