@@ -19,17 +19,26 @@ https://cmake.org/<br>
 https://github.com/nlohmann/json<br>
 
 ## Building & Running
-* If you would like to build all project (appliccation and tests), than run:<br>
-`cmake --build .\cmake-build-debug --target all -- -j 6`<br>
-  * To run application type:<br>
-`.\bin\Search_in_files`<br>
-  * To run tests type:<br>
-`.\bin\Google_Tests_run`<br>
+* Step 1: Build the project.<br>
+  * If you use Visual Studio compiler you can build x64 or x32 version respectively:<br>
+    * For x64 version:<br>
+`cmake -A x64 -S . -B "build64"`<br>
+`cmake --build build64 --config Release`<br>
+    * For x32 version:<br>
+`cmake -A Win32 -S . -B "build32"`<br>
+`cmake --build build32 --config Release`<br>
 
-* If you would like to build only application:<br>
-`cmake --build .\cmake-build-debug --target Search_in_files -- -j 6`<br>
-  * To run application type:<br>
-`.\bin\Search_in_files`<br>
+  * In other cases use default build:<br>
+`cmake -S . -B "build"`<br>
+`cmake --build build --config Release`<br>
+
+* Step 2: copy files:<br>
+`.\bin\requests.json`, `.\bin\config.json`, `.\bin\answers.json` and `.\bin\resources` folder<br>
+from `.\bin` folder <br>
+to the `.\bin\Release` folder.<br>
+
+* Step 3: run the application:<br>
+`.\bin\Release\Search_in_files`<br>
 
 ## Files specification
 * config.json<br>
