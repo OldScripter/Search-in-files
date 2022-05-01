@@ -19,13 +19,18 @@ https://cmake.org/<br>
 https://github.com/nlohmann/json<br>
 
 ## Building & Running
-* Step 1: Build all project (appliccation and tests), than run from root directory (respectively for x32 or x64 version):<br>
-* * For x64 version:<br>
+* Step 1: Build the project.<br>
+  * If you use Visual Studio compiler you can build x64 or x32 version respectively:<br>
+    * For x64 version:<br>
 `cmake -A x64 -S . -B "build64"`<br>
 `cmake --build build64 --config Release`<br>
-* * For x32 version:<br>
+    * For x32 version:<br>
 `cmake -A Win32 -S . -B "build32"`<br>
 `cmake --build build32 --config Release`<br>
+
+  * In other cases use default build:<br>
+`cmake -S . -B "build"`<br>
+`cmake --build build --config Release`<br>
 
 * Step 2: copy files:<br>
 `.\bin\requests.json`, `.\bin\config.json`, `.\bin\answers.json` and `.\bin\resources` folder<br>
