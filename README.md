@@ -19,17 +19,18 @@ https://cmake.org/<br>
 https://github.com/nlohmann/json<br>
 
 ## Building & Running
-* If you would like to build all project (appliccation and tests), than run:<br>
-`cmake --build .\cmake-build-debug --target all -- -j 6`<br>
-  * To run application type:<br>
-`.\bin\Search_in_files`<br>
-  * To run tests type:<br>
-`.\bin\Google_Tests_run`<br>
+* Step 1: Build all project (appliccation and tests), than run (respectively for x32 or x64 version):<br>
+`cmake -G "Visual Studio 16 2019" -A Win32 -S \path_to_source\ -B "build32"`<br>
+`cmake -G "Visual Studio 16 2019" -A x64 -S \path_to_source\ -B "build64"`<br>
+`cmake --build build32 --config Release`<br>
+`cmake --build build64 --config Release`<br>
 
-* If you would like to build only application:<br>
-`cmake --build .\cmake-build-debug --target Search_in_files -- -j 6`<br>
+* Step 2: copy files `.\bin\requests.json`, `.\bin\config.json`, `.\bin\answers.json` and `.\bin\resources` folder from `.\bin` folder to the `.\bin\Release` folder.
+* Step 3: run the application or tests:
   * To run application type:<br>
-`.\bin\Search_in_files`<br>
+`.\bin\Release\Search_in_files`<br>
+  * To run tests type:<br>
+`.\bin\Release\Google_Tests_run`<br>
 
 ## Files specification
 * config.json<br>
