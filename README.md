@@ -21,14 +21,18 @@ https://github.com/nlohmann/json<br>
 ## Building & Running
 * Step 1: Build all project (appliccation and tests), than run from root directory (respectively for x32 or x64 version):<br>
 * * For x64 version:<br>
-`cmake -G "Visual Studio 16 2019" -A x64 -S . -B "build64"`<br>
+`cmake -A x64 -S . -B "build64"`<br>
 `cmake --build build64 --config Release`<br>
 * * For x32 version:<br>
-`cmake -G "Visual Studio 16 2019" -A Win32 -S . -B "build32"`<br>
+`cmake -A Win32 -S . -B "build32"`<br>
 `cmake --build build32 --config Release`<br>
 
-* Step 2: copy files `.\bin\requests.json`, `.\bin\config.json`, `.\bin\answers.json` and `.\bin\resources` folder from `.\bin` folder to the `.\bin\Release` folder.
-* Step 3: run the application:
+* Step 2: copy files:<br>
+`.\bin\requests.json`, `.\bin\config.json`, `.\bin\answers.json` and `.\bin\resources` folder<br>
+from `.\bin` folder <br>
+to the `.\bin\Release` folder.<br>
+
+* Step 3: run the application:<br>
 `.\bin\Release\Search_in_files`<br>
 
 ## Files specification
