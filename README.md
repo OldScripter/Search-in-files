@@ -27,9 +27,9 @@ https://github.com/nlohmann/json<br>
 
 * Step 2: copy files `.\bin\requests.json`, `.\bin\config.json`, `.\bin\answers.json` and `.\bin\resources` folder from `.\bin` folder to the `.\bin\Release` folder.
 * Step 3: run the application or tests:
-  * To run application type:<br>
+  * To run application:<br>
 `.\bin\Release\Search_in_files`<br>
-  * To run tests type:<br>
+  * To run tests:<br>
 `.\bin\Release\Google_Tests_run`<br>
 
 ## Files specification
