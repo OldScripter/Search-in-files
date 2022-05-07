@@ -80,35 +80,38 @@ File where search result will be written in JSON format.<br>
 Example content:<br>
 ```json
 {
-  "request0": {
-    "relevance": [
-      {
-        "docid": 1,
-        "rank": 1.0
-      },
-      {
-        "docid": 0,
-        "rank": 0.6700000166893005
-      }
-    ],
-    "result": true
-  },
-  "request1": {
-    "relevance": [
-      {
-        "docid": 0,
-        "rank": 1.0
-      },
-      {
-        "docid": 1,
-        "rank": 1.0
-      }
-    ],
-    "result": true
-  },
-  "request2": {
-    "relevance": [],
-    "result": false
+  "answers": {
+    "request0": {
+      "relevance": [
+        {
+          "docid": 1,
+          "rank": 1.0
+        },
+        {
+          "docid": 0,
+          "rank": 0.6700000166893005
+        }
+      ],
+      "result": true
+    },
+    "request1": {
+      "relevance": [
+        {
+          "docid": 0,
+          "rank": 1.0
+        },
+        {
+          "docid": 1,
+          "rank": 1.0
+        }
+      ],
+      "result": true
+    },
+    "request2": {
+      "docid": 1,
+      "rank": 1.0,
+      "result": true
+    }
   }
 }
 ```
