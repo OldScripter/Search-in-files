@@ -1,4 +1,4 @@
-#include "../include/SearchServer.h"
+#include "SearchServer.h"
 
 std::set<std::string> SearchServer::getUniqueWords(const std::string& request)
 {
@@ -12,18 +12,6 @@ std::set<std::string> SearchServer::getUniqueWords(const std::string& request)
 
         result.emplace(word);
     }
-    /*for (char character :  request)
-    {
-        if (character != ' ')
-        {
-            word += character;
-        }
-        else
-        {
-            if (!word.empty()) result.emplace(word);
-            word = "";
-        }
-    }*/
     return result;
 }
 
@@ -46,29 +34,24 @@ std::vector<std::pair<std::string, size_t>> SearchServer::getWordsEntries(const 
     return result;
 }
 
-std::vector<size_t> SearchServer::getDocumentsWithAllWords(const std::vector<std::pair<std::string, size_t>> &words)
+std::vector<size_t> SearchServer::getAllDocumentsWithWords(const std::vector<std::pair<std::string, size_t>> &words)
 {
     std::vector<size_t> docIds {};
     // Getting entries and docIds:
     for (const auto& wordAndEntry : words)
     {
-        auto entries = InvertedIndex::getInstance()->getWordCount(wordAndEntry.first);
+        auto entries = _index.getWordCount(wordAndEntry.first);
         for (auto entry : entries)
         {
             docIds.push_back(entry.doc_id);
         }
     }
 
-    // Clearing doc ids where at least 1 word is missing:
-    docIds.erase(std::remove_if(docIds.begin(), docIds.end(), [&docIds, &words](const size_t &x)
-    {
-        return std::count(docIds.begin(), docIds.end(), x) != words.size();
-    }), docIds.end());
-
     // Getting unique ids from docIds:
     std::set<size_t> uniqueDocIds (docIds.begin(), docIds.end());
     docIds.clear();
     docIds.assign(uniqueDocIds.begin(), uniqueDocIds.end());
+    std::sort(docIds.begin(), docIds.end(), std::less<size_t>());
     return docIds;
 }
 
@@ -84,7 +67,8 @@ size_t SearchServer::getAbsoluteRelevanceForDocument(size_t docId, std::set<std:
    size_t absoluteRelevance {0};
    for (const auto& word : uniqueWords)
    {
-       absoluteRelevance += InvertedIndex::getInstance()->getWordCountInDoc(word, docId);
+       size_t wordCountInDoc = InvertedIndex::getInstance()->getWordCountInDoc(word, docId);
+       absoluteRelevance += wordCountInDoc;
    }
     return absoluteRelevance;
 }
@@ -115,45 +99,57 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
         sortWordsAscendingToEntries(wordsEntries);
 
         // Get the document list of documents
-        auto documentIds = getDocumentsWithAllWords(wordsEntries);
+        auto documentIds = getAllDocumentsWithWords(wordsEntries);
         std::string docOrDocs = documentIds.size() == 1 ? " document " : " documents ";
         std::string wordOrWords = uniqueWords.size() == 1 ? " word: " : " words: ";
-        std::cout << "\t-found " << documentIds.size() << docOrDocs << "with" << wordOrWords;
-        for (auto word : uniqueWords)
-        {
-            std::cout << word << " ";
-        }
-        std::cout << "\n";
 
         // Get absolute relevance and maximal relevance:
         std::vector<RelativeIndex>* relativeIndexes = new std::vector<RelativeIndex>();
-        size_t maxRelevance {0};
+        size_t maxAbsoluteRelevance {0};
         for (const auto& docId : documentIds)
         {
             size_t absoluteRelevance = getAbsoluteRelevanceForDocument(docId, uniqueWords);
             auto* relativeIndex = new RelativeIndex();
             relativeIndex->doc_id = docId;
             relativeIndex->absoluteIndex = absoluteRelevance;
-
             relativeIndexes->push_back(*relativeIndex);
-            if (absoluteRelevance > maxRelevance) maxRelevance = absoluteRelevance;
+            delete relativeIndex;
+            if (absoluteRelevance > maxAbsoluteRelevance) maxAbsoluteRelevance = absoluteRelevance;
         }
 
         // Get relative relevance for each document:
         for (auto& relativeIndex : *relativeIndexes)
         {
-            if (maxRelevance != 0) relativeIndex.rank = (float) (relativeIndex.absoluteIndex) / (float) maxRelevance;
+            if (maxAbsoluteRelevance != 0)
+            {
+                float rank = (float) relativeIndex.absoluteIndex / (float) maxAbsoluteRelevance;
+                int rounded = (int) std::round(rank * 100);
+                rank = (float) rounded / 100;
+                relativeIndex.rank = rank;
+            }
             else relativeIndex.rank = 0;
         }
 
-        // Sort the documents according to relevance descending
+        // Sort the documents according to relevance (descending):
         std::sort(relativeIndexes->begin(), relativeIndexes->end(), [&relativeIndexes](RelativeIndex &left, RelativeIndex &right)
         {
-           return left.rank > right.rank;
+           return (left.rank > right.rank || (left.rank == right.rank && left.doc_id < right.doc_id));
         });
+
+        //Cut the result according to maxResponsesCount from InvertedIndex:
+        if (relativeIndexes->size() > maxResponses)
+        {
+            relativeIndexes->erase(relativeIndexes->begin() + maxResponses, relativeIndexes->end());
+        }
 
         // Push this vector to the result:
         result.push_back(*relativeIndexes);
+        delete relativeIndexes;
     }
     return result;
+}
+
+void SearchServer::setMaxResponses(const int &newMaxResponses)
+{
+    this->maxResponses = newMaxResponses;
 }

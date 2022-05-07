@@ -51,10 +51,7 @@ class InvertedIndex
      */
     size_t getWordCountInDoc(const std::string& word, const size_t doc_id) const; // ADDITIONAL METHOD
 
-    /**
-     * Start indexing of all files in separate threads
-     */
-    void indexAllDocs();
+
 
     private:
     
@@ -73,18 +70,8 @@ class InvertedIndex
     static std::map<std::string, std::vector<Entry>> frequencyDictionary; // frequency dictionary for all files
     static bool indexingIsOngoing;
 
-    // Just for test
-    void printTheFreqMap()
-    {
-        if (frequencyDictionary.empty()) std::cerr << "Empty map!\n";
-
-        for (auto word : frequencyDictionary)
-        {
-            std::cout << word.first << ":\n";
-            for (auto freq : word.second)
-            {
-                std::cout << "\t- " << freq.doc_id << ", " << freq.count << "\n";
-            }
-        }
-    }
+    /**
+     * Print the frequency map
+     */
+    void printTheFreqMap();
 };

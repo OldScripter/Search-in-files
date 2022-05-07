@@ -1,7 +1,7 @@
 #include <iostream>
-#include "include/ConverterJSON.h"
-#include "include/InvertedIndex.h"
-#include "include/SearchServer.h"
+#include "ConverterJSON.h"
+#include "InvertedIndex.h"
+#include "SearchServer.h"
 
 /**
  * Write answers to the JSON file answers.json
@@ -41,10 +41,11 @@ int main()
     //Search:
     std::cout << "Searching...\n";
     SearchServer searchServer(*InvertedIndex::getInstance());
+    searchServer.setMaxResponses(ConverterJSON::getInstance()->getMaxResponses());
     auto allRequestsResults = searchServer.search(ConverterJSON::getInstance()->getRequests());
     writeAnswers(allRequestsResults);
     std::cout << "End of search.\n";
-    //Pause the console - uncomment it if pause is necessary:
-    //std::cin.get();
+    //Pause the console - uncomment if pause is necessary:
+    std::cin.get();
     return 0;
 }

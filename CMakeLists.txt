@@ -1,20 +1,11 @@
 cmake_minimum_required(VERSION 3.22)
-project(Search_in_files_v2)
+project(Search_in_files)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_EXE_LINKER_FLAGS "-static")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
 
 # Google test: ===================================================================
-#[[include(FetchContent)
-FetchContent_Declare(
-        googletest
-        URL
-        https://github.com/google/googletest/archive/609281088cfefc76f9d0ce82e1ff6c30cc3591e5.zip
-)
-include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-set(gtest_disable_pthreads on)
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(googletest)]]
 enable_testing()
 # ================================================================================
 
@@ -22,14 +13,35 @@ add_subdirectory(nlohmann_json)
 add_subdirectory(Google_tests)
 
 add_executable(
-        Search_in_files_v2
+        ${PROJECT_NAME}
         main.cpp
         src/ConverterJSON.cpp
         src/InvertedIndex.cpp
         src/SearchServer.cpp
         )
 
-target_link_libraries(Search_in_files_v2 PRIVATE nlohmann_json::nlohmann_json #[[gtest_main]] ${CMAKE_EXE_LINKER_FLAGS})
-#[[
-include(GoogleTest)
-gtest_discover_tests(Search_in_files_v2)]]
+include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json ${CMAKE_EXE_LINKER_FLAGS})
+
+# Copy auxiliary files to binary folder: ==========================================================
+add_custom_command(
+        TARGET ${PROJECT_NAME}  POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ${CMAKE_CURRENT_SOURCE_DIR}/config.json
+        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/config.json)
+add_custom_command(
+        TARGET ${PROJECT_NAME}  POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ${CMAKE_CURRENT_SOURCE_DIR}/requests.json
+        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/requests.json)
+add_custom_command(
+        TARGET ${PROJECT_NAME}  POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ${CMAKE_CURRENT_SOURCE_DIR}/answers.json
+        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/answers.json)
+add_custom_command(TARGET ${PROJECT_NAME}  POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_CURRENT_SOURCE_DIR}/resources
+        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources)
+# =================================================================================================
