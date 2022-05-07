@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "../include/InvertedIndex.h"
+#include "InvertedIndex.h"
 using namespace std;
 
 void TestInvertedIndexFunctionality(
@@ -8,7 +8,7 @@ void TestInvertedIndexFunctionality(
         const std::vector<std::vector<Entry>>& expected
 ) {
     std::vector<std::vector<Entry>> result;
-    InvertedIndex* idx = InvertedIndex::getInstance();
+    auto* idx = new InvertedIndex();
 
     idx->updateDocumentBase(docs);
     for(auto& request : requests) {

@@ -35,12 +35,13 @@ int main()
     //Initialization:
     ConverterJSON::getInstance()->readConfigFile();
     ConverterJSON::getInstance()->readRequestFile();
-    std::vector<std::string>* documents = ConverterJSON::getInstance()->getTextDocuments();
-    InvertedIndex::getInstance()->updateDocumentBase(*documents);
+    std::vector<std::string> documents = ConverterJSON::getInstance()->getTextDocuments();
+    auto* invertedIndex = new InvertedIndex();
+    invertedIndex->updateDocumentBase(documents);
 
     //Search:
     std::cout << "Searching...\n";
-    SearchServer searchServer(*InvertedIndex::getInstance());
+    SearchServer searchServer(*invertedIndex);
     searchServer.setMaxResponses(ConverterJSON::getInstance()->getMaxResponses());
     auto allRequestsResults = searchServer.search(ConverterJSON::getInstance()->getRequests());
     writeAnswers(allRequestsResults);

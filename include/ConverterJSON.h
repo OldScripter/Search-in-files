@@ -18,13 +18,13 @@ class ConverterJSON
      * Get the files content in string vector form
      * @return content of files listed in config.json
      */
-    std::vector<std::string>* getTextDocuments();
+    std::vector<std::string> getTextDocuments();
 
     /**
      * Get the max responses per request
      * @return max responses count
      */
-    int getResponsesLimit() const; // @StasTalanov: const is added (proposal) - not according to requirements.
+    int getResponsesLimit() const;
 
     /**
      * Get the Requests from requests.json
@@ -41,12 +41,12 @@ class ConverterJSON
     /**
      * Read config file specified in CONFIG_FILE_PATH
      */
-    void readConfigFile();
+    void readConfigFile(std::string path = "config.json");
 
     /**
      * Read request file specified in REQUEST_FILE_PATH
      */
-    void readRequestFile();
+    void readRequestFile(std::string path = "requests.json");
 
     /**
      * Get maximal responses quantity, which can be returned be Search Server
@@ -56,25 +56,12 @@ class ConverterJSON
 
     private:
     ConverterJSON() = default; // private constructor for singleton realization
-    
     static ConverterJSON* instance;
-
-    const std::string CONFIG_FILE_PATH = "config.json";
-    const std::string REQUEST_FILE_PATH = "requests.json";
     const std::string ANSWERS_FILE_PATH = "answers.json";
-
     std::string applicationName;
     std::string applicationVersion;
-    int maxResponses;
+    int maxResponses  {5};
     std::vector<std::string> resourcesPaths;
     std::vector<std::string> textDocuments;
     std::vector<std::string> requests;
-
-    /**
-     * Clear the file
-     * @param [in] path - file path
-     * @return true - if clearing is successful
-     * @return false - if clearing is fail
-     */
-    bool clearFileContent(const std::string path);
 };

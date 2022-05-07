@@ -5,12 +5,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_EXE_LINKER_FLAGS "-static")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
 
-# Google test: ===================================================================
-enable_testing()
-# ================================================================================
-
 add_subdirectory(nlohmann_json)
-add_subdirectory(Google_tests)
 
 add_executable(
         ${PROJECT_NAME}
@@ -44,4 +39,22 @@ add_custom_command(TARGET ${PROJECT_NAME}  POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_CURRENT_SOURCE_DIR}/resources
         ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources)
-# =================================================================================================
+
+# Tests: =======================================================================================
+project(Google_tests)
+enable_testing()
+include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+add_subdirectory(${PROJECT_NAME}/lib)
+add_executable(
+        ${PROJECT_NAME}
+        Google_tests/InverterIndexTest.cpp
+        Google_tests/SearchServerTest.cpp
+        src/InvertedIndex.cpp
+        src/SearchServer.cpp
+)
+set_target_properties(${PROJECT_NAME} PROPERTIES
+        CXX_STANDARD 14
+        CXX_STANDARD_REQUIRED ON
+        )
+target_link_libraries(${PROJECT_NAME} gtest gtest_main)

@@ -3,21 +3,8 @@
 const int HEADER_SPACER = 15;
 
 //static members initialization -----------------------------
-InvertedIndex* InvertedIndex::instance {nullptr};
-std::map<int, std::string> InvertedIndex::document_list = {};
 std::mutex InvertedIndex::mutexIndexMap;
-std::map<std::string, std::vector<Entry>> InvertedIndex::frequencyDictionary = {};
-bool InvertedIndex::indexingIsOngoing = false;
 //-------------------------------------------------------------
-
-InvertedIndex* InvertedIndex::getInstance()
-{
-    if (instance == nullptr)
-    {
-        instance = new InvertedIndex();
-    }
-    return instance;
-}
 
 void InvertedIndex::updateDocumentBase(const std::vector<std::string>& input_docs)
 {
@@ -34,17 +21,11 @@ void InvertedIndex::updateDocumentBase(const std::vector<std::string>& input_doc
     for (const auto& content : input_docs)
     {
         // Start indexing thread.
-        std::thread index(indexTheFile, content, docId);
+        std::thread index([this, &content, docId](){indexTheFile(content, docId);});
         ++docId;
         index.join();
     }
     indexingIsOngoing = false;
-    //Uncomment for debug: std::cout << "Frequency map:\n";
-    //Uncomment for debug: printTheFreqMap();
-    //Uncomment for debug: for (int i = 0; i < HEADER_SPACER; ++i) {std::cout << "=";}
-    //Uncomment for debug: std::cout << "[Ready for search]";
-    //Uncomment for debug: for (int i = 0; i < HEADER_SPACER; ++i) {std::cout << "=";}
-    //Uncomment for debug: std::cout << "\n";
 }
 
 std::vector<Entry> InvertedIndex::getWordCount(const std::string& word)
@@ -118,18 +99,4 @@ size_t InvertedIndex::getWordCountInDoc(const std::string& word, const size_t do
         std::cout << "Word \"" << word << "\" not found.\n";
     }
     return wordCountInDoc;
-}
-
-void InvertedIndex::printTheFreqMap()
-{
-    if (frequencyDictionary.empty()) std::cerr << "Empty map!\n";
-
-    for (const auto& word : frequencyDictionary)
-    {
-        std::cout << word.first << ":\n";
-        for (auto freq : word.second)
-        {
-            std::cout << "\t- " << freq.doc_id << ", " << freq.count << "\n";
-        }
-    }
 }
