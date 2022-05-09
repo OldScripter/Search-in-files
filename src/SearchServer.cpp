@@ -20,7 +20,7 @@ std::vector<std::pair<std::string, size_t>> SearchServer::getWordsEntries(const 
     std::vector<std::pair<std::string, size_t>> result;
     for (const auto& word : words)
     {
-        auto wordEntries = InvertedIndex::getInstance()->getWordCount(word);
+        auto wordEntries = _index.getWordCount(word);
         size_t wordEntriesSum = 0;
         for (auto wordEntry : wordEntries)
         {
@@ -67,7 +67,7 @@ size_t SearchServer::getAbsoluteRelevanceForDocument(size_t docId, std::set<std:
    size_t absoluteRelevance {0};
    for (const auto& word : uniqueWords)
    {
-       size_t wordCountInDoc = InvertedIndex::getInstance()->getWordCountInDoc(word, docId);
+       size_t wordCountInDoc = _index.getWordCountInDoc(word, docId);
        absoluteRelevance += wordCountInDoc;
    }
     return absoluteRelevance;

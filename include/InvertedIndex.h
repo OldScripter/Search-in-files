@@ -24,11 +24,7 @@ class InvertedIndex
 {
     public:
 
-    /**
-     * Get the Instance object of InvertedIndex class
-     * @return instance of the singleton
-     */
-    static InvertedIndex* getInstance();
+    InvertedIndex() = default;
 
     /**
     * Update or fill the documents base in which search will be performed
@@ -51,27 +47,17 @@ class InvertedIndex
      */
     size_t getWordCountInDoc(const std::string& word, const size_t doc_id) const; // ADDITIONAL METHOD
 
-
-
     private:
-    
-    InvertedIndex() = default; //private constructor for singleton implementation
-    
+
     /**
      * Perform the indexing of the separate file
      * @param [in] fileContent - std::string with file content
      * @param [in] docId - id of the file
      */
-    static void indexTheFile(const std::string& fileContent, size_t docId);
+    void indexTheFile(const std::string& fileContent, size_t docId);
 
-    static InvertedIndex* instance;
-    static std::map<int, std::string> document_list; // map of documents (unique id and file name) for search in
+    std::map<int, std::string> document_list; // map of documents (unique id and file name) for search in
     static std::mutex mutexIndexMap; // access to index map
-    static std::map<std::string, std::vector<Entry>> frequencyDictionary; // frequency dictionary for all files
-    static bool indexingIsOngoing;
-
-    /**
-     * Print the frequency map
-     */
-    void printTheFreqMap();
+    std::map<std::string, std::vector<Entry>> frequencyDictionary; // frequency dictionary for all files
+    bool indexingIsOngoing;
 };

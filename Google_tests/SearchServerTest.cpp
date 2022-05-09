@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "../include/SearchServer.h"
+#include "SearchServer.h"
 
 TEST(TestCaseSearchServer, TestSimple) {
     const std::vector<std::string> docs = {
@@ -18,7 +18,7 @@ TEST(TestCaseSearchServer, TestSimple) {
             {
             }
     };
-    InvertedIndex* idx = InvertedIndex::getInstance();
+    auto* idx = new InvertedIndex();
     idx->updateDocumentBase(docs);
     SearchServer srv(*idx);
     std::vector<std::vector<RelativeIndex>> result = srv.search(request);
@@ -59,7 +59,7 @@ TEST(TestCaseSearchServer, TestTop5) {
                     {2, 0.67}
             }
     };
-    InvertedIndex* idx = InvertedIndex::getInstance();
+    auto idx = new InvertedIndex();
     idx->updateDocumentBase(docs);
     SearchServer srv(*idx);
     std::vector<std::vector<RelativeIndex>> result = srv.search(request);

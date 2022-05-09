@@ -15,7 +15,7 @@ ConverterJSON* ConverterJSON::getInstance()
 }
 //---------------------------------------------------------
 
-std::vector<std::string>* ConverterJSON::getTextDocuments()
+std::vector<std::string> ConverterJSON::getTextDocuments()
 {
     textDocuments.clear();
     for (const auto& doc : resourcesPaths)
@@ -40,7 +40,7 @@ std::vector<std::string>* ConverterJSON::getTextDocuments()
         }
     }
     std::cout << "Input docs read success: " << resourcesPaths.size() << " files\n";
-    return &textDocuments;
+    return textDocuments;
 }
 
 int ConverterJSON::getResponsesLimit() const
@@ -58,22 +58,19 @@ void ConverterJSON::putAnswers(std::vector<std::vector<std::pair<int, float>>> a
     nlohmann::json answersDict;
     if (!answers.empty())
     {
-        std::cout << "Clearing answers file... ";
-        clearFileContent(ANSWERS_FILE_PATH) ? std::cout << "done\n" : std::cout << "error\n";
-
         std::cout << "Answers pushing... ";
-        std::ofstream answersFile(ANSWERS_FILE_PATH, std::ios_base::app);
+        std::ofstream answersFile(ANSWERS_FILE_PATH, std::ios_base::trunc);
         if (answersFile.is_open())
         {
             int requestCount {0};
             nlohmann::json answerDictionary;
             for (auto request : answers)
             {
-                answersDict["request" + std::to_string(requestCount)]["result"] = !request.empty();
+                answersDict["answers"]["request" + std::to_string(requestCount)]["result"] = !request.empty();
                 if (request.size() == 1)
                 {
-                    answersDict["request" + std::to_string(requestCount)]["docid"] = request[0].first;
-                    answersDict["request" + std::to_string(requestCount)]["rank"] = request[0].second;
+                    answersDict["answers"]["request" + std::to_string(requestCount)]["docid"] = request[0].first;
+                    answersDict["answers"]["request" + std::to_string(requestCount)]["rank"] = request[0].second;
                 }
                 else
                 {
@@ -89,7 +86,7 @@ void ConverterJSON::putAnswers(std::vector<std::vector<std::pair<int, float>>> a
                         relevance_member["rank"] = relevance.second;
                         relevance_array.push_back(relevance_member);
                     }
-                    answersDict["request" + std::to_string(requestCount)]["relevance"] = relevance_array;
+                    answersDict["answers"]["request" + std::to_string(requestCount)]["relevance"] = relevance_array;
                 }
                 ++requestCount;
             }
@@ -108,9 +105,9 @@ void ConverterJSON::putAnswers(std::vector<std::vector<std::pair<int, float>>> a
     }
 }
 
-void ConverterJSON::readConfigFile()
+void ConverterJSON::readConfigFile(std::string path)
 {
-    std::ifstream configFile(CONFIG_FILE_PATH);
+    std::ifstream configFile(path);
     if (configFile.is_open())
     {
         nlohmann::json configDictionary;
@@ -137,14 +134,14 @@ void ConverterJSON::readConfigFile()
     }
     else
     {
-        std::cerr << "\t - file not found error: " + CONFIG_FILE_PATH << "\n";
+        std::cerr << "\t - file not found error: " + path << "\n";
     }
 }
 
-void ConverterJSON::readRequestFile()
+void ConverterJSON::readRequestFile(std::string path)
 {
     std::cout << "Requests reading: ";
-    std::ifstream configFile(REQUEST_FILE_PATH);
+    std::ifstream configFile(path);
     if (configFile.is_open())
     {
         nlohmann::json requestsDictionary;
@@ -160,21 +157,7 @@ void ConverterJSON::readRequestFile()
     }
     else
     {
-        std::cerr << "\t - file not found error: " + REQUEST_FILE_PATH << "\n";
-    }
-}
-
-bool ConverterJSON::clearFileContent(const std::string path)
-{
-    std::ofstream clearingStream(path, std::ios::trunc);
-    if (clearingStream.is_open())
-    {
-        clearingStream.close();
-        return true;
-    }
-    else
-    {
-        return false;
+        std::cerr << "\t - file not found error: " + path << "\n";
     }
 }
 
