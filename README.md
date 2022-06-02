@@ -18,6 +18,9 @@ https://cmake.org/<br>
 ![GitHub author](https://img.shields.io/badge/JSON-3.10.5-orange?style=for-the-badge)<br>
 https://github.com/nlohmann/json<br>
 
+![GitHub author](https://img.shields.io/badge/GTest-1.11.0-green?style=for-the-badge)<br>
+https://github.com/google/googletest<br>
+
 ## Building & Running
 * Step 1: Build the project.<br>
   * If you use Visual Studio compiler you can build x64 or x32 version respectively:<br>
